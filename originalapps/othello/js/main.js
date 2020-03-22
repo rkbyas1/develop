@@ -4,7 +4,6 @@
     const board = document.getElementById('board');
     const table = document.createElement('table');
     const comment = document.getElementById('comment');
-    const points = document.getElementById('points');
     let tr = document.createElement('tr');
     let td = document.createElement('td');
     let x;
@@ -542,7 +541,7 @@
             for (let j = 0; j < 8; j++) {
                 let id = String(`${i}${j}`);
                 let panel = document.getElementById(id);
-
+                // whiteとblackをカウント
                 if (panel.classList.contains('white')) {
                     whiteStone++;
                 } else if (panel.classList.contains('black')) {
@@ -554,6 +553,28 @@
         }
         console.log(whiteStone);
         console.log(blackStone);
+
+        /** 判定 */ 
+        function alertMessage(white, black, winColor) {
+            setTimeout(() => {
+                alert(`白 ${white} : 黒 ${black}で${winColor}の勝ち！`);
+                // 続けて再プレイの催促
+                if (confirm('Replay？')) {
+                    window.location.reload();
+                } else {
+                    return;
+                }
+            }, 100);
+        }
+        // 全マス埋まったら勝ち負け判定アラートメッセージを出す
+        if ((whiteStone + blackStone) > 63) {
+            if (whiteStone > blackStone) {
+                alertMessage(whiteStone, blackStone, '白');
+            }
+            if (whiteStone < blackStone) {
+                alertMessage(whiteStone, blackStone, '黒');
+            }
+        }
     });
 
 

@@ -1,0 +1,62 @@
+h2 {
+    text-align: center;
+}
+table {
+    border-collapse: collapse;
+    margin: auto;
+    user-select: none;
+    cursor: pointer;
+}
+td {
+    background: #00ac00;
+    text-align: center;
+    line-height: 45px;
+    width: 45px;
+    height: 45px;
+    border: solid #000 2px;;
+    padding: 0;
+    margin: 0;
+    font-size: 45px;
+    color: #000;
+}
+.white {
+    color: #fff;
+}
+.black {
+    color: #000;
+}
+
+.piece {
+    width: 38px;
+    height: 38px;
+}
+#comment {
+    margin-top: 20px;
+    text-align: center;
+}
+#points {
+    margin-top: 20px;
+    text-align: center;
+    margin: 10px auto;
+    background: #f3d;
+    width: 120px;
+    padding: 5px;
+    border-radius: 4px;
+}
+#change {
+    margin: 10px auto;
+    text-align: center;  
+    background: #3e00ff;
+    width: 120px;
+    color: #fff;
+    padding: 5px;
+    border-radius: 4px;
+    cursor: pointer;
+    user-select: none;
+}
+#change:hover {
+    opacity: 0.8;
+}
+#change:active {
+    opacity: 1;
+}

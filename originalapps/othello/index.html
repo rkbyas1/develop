@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="utf-8">
+        <title>Othello!!</title>
+        <link rel="icon" href="images/othello.ico">
+        <h2>Othello</h2>
+        <link rel="stylesheet" href="css/style.css">
+    </head>
+    <body>
+        <div id="board">
+            
+        </div>
+        <div id="comment">手番です</div>
+        <div id="change">スキップ</div>
+        <div id="points">ポイント</div>
+        <div>
+            <ul>！仕様！
+                <li>盤は８×８マスを利用する★</li>
+                <li>初期状態で真ん中の４マスに白黒石を交互に配置する★</li>
+                <li>白黒の順番で石を置いていく★</li>
+                <li>新たに置いた自身の石と事前に置いてある自身の石の直線上に置いてある相手の石は自身の石にけることが出来る★</li>
+                <li>石を置ける場所は、下記の条件を満たしている★</li>
+                    <ol>
+                        <li>置くマスに他の石がない事★</li>
+                        <li>置くマスの上下左右、斜め１マスの場所に相手の石がある事★</li>
+                        <li>置いた石、相手の石があった方向の延長上に自身の石がある事★</li>
+                    </ol>
+                <li>石を置ける条件を満たせない場合は、相手の番に代わる★</li>
+                <li>すべてのマスに石が置かれるか、どちらかの石が0個になった時点でゲーム終了</li>
+                <li>ゲーム終了時点で石の数が多い方が勝ちとな</li>
+            </ul>
+        </div>
+        <div>[最後に得点を出す]<br>
+            クラスがついていないマスが0個になったらメッセージを出す
+        </div>
+      <script src="js/main.js"></script>
+    </body>
+</html>

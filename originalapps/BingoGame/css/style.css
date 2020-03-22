@@ -1,0 +1,110 @@
+#disparea {
+    height: 600px;
+    width: 600px;
+    background: #dfdfd8;
+    padding-top: 50px;
+    user-select: none;
+    font-family: 'arial';
+    position: relative;
+}
+#panel {
+    display: flex;
+    padding: 0;
+}
+#blk1 {
+    background: #fff;
+    height: 190px;
+    width: 190px;
+    margin: 10px auto 10px 100px;
+    text-align: center;
+    line-height: 190px;
+    border-radius: 10px;
+    font-size: 160px;
+    color: #00a0ff;
+    font-weight: bold;
+}
+#blk2 {
+    background: #fff;
+    height: 190px;
+    width: 190px;
+    margin: 10px 100px 10px auto;
+    text-align: center;
+    line-height: 190px;  
+    border-radius: 12px; 
+    font-size: 160px; 
+    color: #00a0ff;
+    font-weight: bold;
+}
+#stop {
+    background: #62b4da; 
+    height: 60px;
+    width: 95px;
+    margin: 16px auto;
+    border-radius: 4px;
+    text-align: center;
+    line-height: 60px;
+    color: #fff;
+    font-size: 15px;
+    cursor: pointer;
+    opacity: 0.8;
+}
+#stop:hover {
+    background: #62b4da;
+    border: solid 1px #837f83;
+    height: 58px;
+    width: 93px;
+    opacity: 1.0;
+}
+#stop:active {
+    box-shadow: 0 0 0;
+    border: solid 1px #00007f;
+}
+#spin {
+    background:  #ff3000;
+    height: 25px;
+    width: 220px;
+    margin: 20px auto;
+    border-radius: 4px;
+    text-align: center;
+    color: #fff;
+    font-size: 15px;
+    line-height: 25px;
+    cursor: pointer;
+    opacity: 0.8;
+}
+#spin:hover {
+    background: #ff3000;
+    border: solid 1px #837f83;
+    height: 23px;
+    width: 218px;
+    opacity: 1.0;
+}
+#spin:active {
+    box-shadow: 0 0 0;
+    border: solid 1px #7f0000;
+}
+table {
+    border-spacing: 7px;
+    color: #00a0ff;
+    font-weight: bold;
+    font-size: 16px;    
+    margin: auto;
+}
+.tdata {
+    background: #fff;
+    text-align: center;
+    width: 24px;
+    height: 26px;
+    opacity: 0.5;
+}
+#sign {
+    text-align: center;
+    color: #00a0ff;
+    font-weight: bold;
+    font-size: 13px;
+    margin: 22px auto;
+}
+.selected {
+    background: #ff0;
+    opacity: 1.0;
+}

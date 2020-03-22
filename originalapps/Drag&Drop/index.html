@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+    <html lang="ja">
+        <head>
+            <meta charset="utf-8">
+            <link rel="stylesheet" href="css/style.css">
+            <title>Drag&Drop</title>   
+        </head>
+        <body>
+            <h1>Drag&Drop</h1>
+            <p>赤枠の中から「<span class='choiced'></span>」を青枠に移動してください</p>
+            <section id="itemsec">
+                <!-- ドラッグするアイテム -->
+                <div id="draggableItems">ドラッグ元<span>　　</span></div>
+                <!-- ドラッグの移動先 -->
+                <div id="dropbox">ドラッグ先<span>　　</span></div>
+            </section>
+
+            <div id="msg">Message: <span id="msgspan">　　</span></div>
+            <div id="judge" class="choiced"></div>
+            <!-- <img src="img/ダウンロード.jpg" alt="" width="100" height="70">
+            <img src="img/ルーブル美術館.jpg" alt="" width="100" height="70"> -->
+            <script src="js/main.js"></script>
+        </body>
+    </html>

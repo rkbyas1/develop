@@ -1,0 +1,22 @@
+body {
+    user-select: none;    
+
+}
+#branch {
+    display: flex;
+    /* background: red; */
+    width: 150px;
+    justify-content: space-between;
+}
+#display_area {
+    display: flex;
+    width: 800px;
+
+}
+#dispQ:hover {
+    cursor: pointer;
+    user-select: none;
+}
+#dispQ:active {
+    background: red;
+}

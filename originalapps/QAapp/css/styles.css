@@ -1,0 +1,41 @@
+/* 主に全体に適用 */
+body {
+    font-family: 'Courier New', Courier, monospace;
+}
+/* タイトル */
+h2{
+    background: lightgray;
+    width: 350px;
+    text-align: center;
+    padding: 8px 10px;
+    border-radius: 12px;
+    font-family: 'Courier New', Courier, monospace;
+}
+/* 質問一覧タイトルのみ */
+h3 {
+    background: rgb(169, 169, 202);
+    width: 110px;
+    padding: 3px;
+    text-align: center;
+    border-radius: 6px;
+    margin-left: 20px;
+}
+/* 質問一覧全体 */
+#questions{
+    margin-left: 20px;
+    display: block;
+}
+#answers{
+    margin-left: 20px;
+    display: block;
+}
+input {
+    margin-top: 15px;
+}
+.container {
+    display: flex;
+}
+button {
+    margin-top: 10px;
+    margin-left: 100px;
+}

@@ -1,0 +1,22 @@
+table {
+    user-select: none;
+}
+#header {
+    background-color: #ff6000;
+    color: #fff;
+    padding: 0px 50px;
+    font-size: 15px;
+    font-weight: bold;
+    letter-spacing: 10px;
+    margin-right: 0px;
+    line-height: 30px;
+}
+button {
+    width: 37px;
+}
+td {
+    padding: 0;
+}
+b:hover {
+    background-color: burlywood;
+}

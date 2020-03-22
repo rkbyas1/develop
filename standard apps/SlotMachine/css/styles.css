@@ -1,0 +1,153 @@
+body {
+    background: gray;
+    font-size: 16px;
+    font-weight: bold;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+.panel img {
+    height: 100px;
+    width: 90px;
+    max-width: 100px;
+    max-height: 100px;
+    margin-bottom: 10px;
+    
+}
+.panel {
+    /* margin: 10px; */
+    
+}
+
+#spin {
+    text-align: center;
+    color: white;
+    background: rgb(89, 230, 89);
+    /* padding: 12px 0; */
+    font-size: 18px;
+    width: 300px;
+    height: 38px;
+    line-height: 38px;
+    margin: 16px auto 0 auto;
+    /* margin: 20px 240px; */
+    border-radius: 20px;
+    box-shadow: 0 4px 0 green;
+    user-select: none;
+    cursor: pointer;
+}
+#spin:hover {
+    background: lightgreen
+}
+#spin:active {
+    box-shadow: 0 2px 0 green;
+    margin-top: 18px;
+}
+/* .spin { 
+    box-shadow: none;
+    margin-top: 0;
+} */
+.stop {
+    text-align: center;
+    line-height: 20px;
+    font-size: 14px;
+    background: lightcoral;
+    padding: 5px 0;
+    border-radius: 15px;
+    /* border: solid 2px white; */
+    cursor: pointer;
+    width: 90px;
+    height: 20px;
+    box-shadow: 0 4px 0 red;
+    user-select: none;
+}
+.stop:hover {
+    background: rgb(238, 167, 167);
+}
+
+.stop:active {
+    box-shadow: 0 2px 0 red;
+    margin-top: 2px;
+}
+
+main {
+    width: 300px;
+    display: flex;
+    background: rgb(139, 198, 221);
+    border-radius: 12px;
+    border: solid white 3px;
+    padding: 20px;
+    margin: 50px auto 0 auto;
+    color: white;
+    justify-content: space-between;
+}
+
+.unmatched {
+    opacity: 0.5;
+}
+.inactive {
+    opacity: 0.5;
+    cursor: initial;
+    margin: initial;
+    box-shadow: initial;
+}
+.inactive:hover {
+    opacity: 0.5;
+    margin: initial;
+    box-shadow: initial;
+}
+
+#again {
+    text-align: center;
+    color: white;
+    background: rgb(206, 204, 114);
+    /* padding: 12px 0; */
+    font-size: 18px;
+    width: 300px;
+    height: 38px;
+    line-height: 38px;
+    margin: 16px auto 0 auto;
+    /* margin: 20px 240px; */
+    border-radius: 20px;
+    box-shadow: 0 4px 0 rgb(89, 119, 50);
+    user-select: none;
+    cursor: pointer;
+}
+#again:hover {
+    background: rgb(209, 228, 174)
+}
+#again:active {
+    box-shadow: 0 2px 0 green;
+    margin-top: 18px;
+}
+#onPlaying {
+    text-align: center;
+    color: white;
+    background: rgb(231, 109, 180);
+    /* padding: 12px 0; */
+    font-size: 18px;
+    width: 300px;
+    height: 38px;
+    line-height: 38px;
+    margin: 16px auto 0 auto;
+    /* margin: 20px 240px; */
+    border-radius: 20px;
+    user-select: none;
+    /* cursor: pointer; */
+}
+
+.hidden {
+    display: none;
+}
+
+#points {
+    text-align: center;
+    color: black;
+    /* background: rgb(230, 229, 184); */
+    font-size: 18px;
+    width: 300px;
+    height: 38px;
+    line-height: 38px;
+    margin: 16px auto 0 auto;
+    border-radius: 20px;
+    user-select: none;
+}
+

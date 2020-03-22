@@ -1,0 +1,108 @@
+body {
+    background: azure;
+    font-size: 14px;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+.container {
+    width: 400px;
+    margin: 10px auto;
+    background: white;
+    border-radius: 4px;
+    padding: 16px;
+    position: relative;
+}
+
+#question {
+    margin-bottom: 16px;
+    font-weight: bold;
+}
+
+#choices {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 50px;
+}
+
+#choices > li {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 10px;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+
+#choices > li:hover {
+    background: lightgray;
+}
+
+#btn, #result > a {
+    background: rgb(81, 81, 128);
+    padding: 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: center;
+    color: white;
+    box-shadow: 0 4px 0 rgb(50, 50, 109)
+}
+
+#btn.disabled {
+    background: #ccc;
+    box-shadow: 0 4px 0 #bbb;
+    opacity: 0.7;
+    
+}
+
+#result {
+    position: absolute;
+    width: 300px;
+    background: white;
+    padding: 40px;
+    box-shadow: 0 4px 8px rgb(104, 84, 84);
+    top: 80px;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    border-radius: 20px;
+    text-align: center;
+    transition: 0.8s;
+}
+
+#result.hidden {
+    /* display: none; */
+    transform: translateY(-500px);
+}
+
+#result > p {
+    font-size: 25px;
+    font-weight: bold;
+}
+
+#result > a {
+    display: block;
+    text-decoration: none;
+}
+
+/* choices直下のliのcorrectクラス */
+#choices > li.correct {
+    background: lightgreen;
+    border-color: green;
+    color: black;
+    font-weight: bold;
+}
+
+/* クリック後にテキストを追加 */
+#choices > li.correct::after {
+    content: '...correct';
+}
+
+#choices > li.wrong {
+    background: lightsalmon;
+    border-color: salmon;
+    color: red;
+    font-weight: bold;
+}
+
+#choices > li.wrong::after {
+    content: '...wrong';
+}

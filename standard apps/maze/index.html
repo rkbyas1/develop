@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="utf-8">
+        <title>Maze</title>
+        <style>
+            body {
+                font-size: 16px;
+                font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+            }
+            #container {
+                margin: 20px auto;
+                text-align: center;
+            }
+            #mycanvas {
+                background: rgb(158, 233, 208);
+            }
+            #reset {
+                background: rgb(193, 80, 216);
+                color: white;
+                width: 200px;
+                height: 25px;
+                line-height: 25px;
+                margin: 20px auto;
+                border-radius: 7px;
+                cursor: pointer;
+                user-select: none;
+            }
+            #reset:hover {
+                opacity: 0.7;
+            }
+        </style>
+    </head>
+    <body>
+        <div id='container'>
+            <canvas width="100" height="100" id="mycanvas">
+                Canvasに対応したブラウザを用意してください。
+            </canvas>
+            <div id="reset" class="btn">RESET</div>
+            <div id="timer">00:00:000</div>
+            <button id='stop'>Goal</button>
+        </div>
+        <script>
+        (function() {
+            // Mazeオブジェクト
+            var Maze = function(col, row) {
+                // 迷路データを配列で用意
+                this.map = [];
+                // フィールドの大きさを設定
+                this.col = col;
+                this.row = row;
+                // スタート地点とゴール地点
+                this.startX = 0;
+                this.startY = 0;
+                this.goalX = col - 1;
+                this.goalY = row - 1;
+                // 壁を作成するための配列
+                this.points = [
+                    [0,-1],
+                    [0,1],
+                    [1,0],
+                    [-1,0] //左に倒す場合はxに-1、yに0を足す
+                ];
+
+                // 配列からランダムに値をとるための関数
+                this.rand = function(n) {
+                    return Math.floor(Math.random() * (n+1));
+                };
+
+                this.init = function() {
+                    // 中身に壁のないフィールドを作成（フィールドの初期化）
+                    for (var x = 0; x<col; x++) {
+                        this.map[x] = [];
+                        for (var y = 0; y<row; y++) {
+                            this.map[x][y] = 0;
+                        }
+                    }
+                    // 一つ飛びごとに壁を描画（壁として必ず残るマス）
+                    for (var x = 1; x<col; x+=2) {
+                        for (var y = 1; y<row; y+=2) {
+                            this.map[x][y] = 1;
+                        }
+                    } 
+                    // ランダムに壁を描画（ランダム描画されるマス）
+                    for (var x = 1; x<col; x+=2) {
+                        for (var y = 1; y<row; y+=2) {
+                            // 一列目は上下左右いずれかに倒す
+                            if (x === 1) {
+                                var r = this.points[this.rand(3)];
+                            // 二列目以降は左以外に倒す
+                            } else {
+                                var r = this.points[this.rand(2)];
+                            }
+                            this.map[x+r[0]][y+r[1]] = 1;
+                        }
+                    } 
+                };
+
+                this.draw = function() {
+                    var view = new View();
+                    // mazeを渡す
+                    view.draw(this);
+                };
+            };
+
+            // Viewオブジェクト
+            var View = function() {
+                // wallSize = 一ブロックのサイズ
+                this.wallSize = 13;
+                this.wallColor = 'green';
+                this.routeColor = 'red';
+
+                // canvas領域を取得
+                this.canvas = document.getElementById('mycanvas');
+                if (!this.canvas || !this.canvas.getContext) {
+                    return false;
+                }
+                // contextの定義
+                this.ctx = this.canvas.getContext('2d');
+
+                // 描画メソッド
+                this.draw = function(maze) {
+                    this.canvas.width = (maze.col + 2) * this.wallSize;
+                    this.canvas.height = (maze.row + 2) * this.wallSize;
+                    
+                    // 上下の壁
+                    for (var x = 0; x<maze.col+2; x++) {
+                        this.drawWall(x, 0);
+                        this.drawWall(x, maze.row+1);
+                    }
+
+                    // 左右の壁
+                    for (var y = 0; y<maze.row+2; y++) {
+                        this.drawWall(0, y);
+                        this.drawWall(maze.col+1, y);
+                    }
+
+                    // 迷路の内部
+                    // x座標とy座標を順繰りにチェックし、アルゴリズム内に1がある部分に壁を描画する
+                    for (var x = 0; x<maze.col; x++) {
+                        for(var y = 0; y<maze.row; y++) {
+                            
+                            if (maze.map[x][y] === 1) {
+                                // 壁より一マス内側から描画
+                                this.drawWall(x+1, y+1);
+                            }
+                            // スタートとゴールの描画
+                            if ((x === maze.startX && y === maze.startY) || (x === maze.goalX && y === maze.goalY)) {
+                                // 壁より一マス内側から描画
+                                this.drawRoute(x+1, y+1);
+                            }
+                        }
+                    }    
+                };
+                // 壁を描画する関数
+                this.drawWall = function(x,y) {
+                    // 塗りつぶす色
+                    this.ctx.fillStyle = this.wallColor;
+                    // 塗りつぶし
+                    this.drawRect(x,y);
+                };
+                // スタートとゴールを描画する関数
+                this.drawRoute = function(x,y) {
+                    // 塗りつぶす色
+                    this.ctx.fillStyle = this.routeColor;
+                    // 塗りつぶし
+                    this.drawRect(x,y);
+                };
+                // 塗りつぶしの共通関数
+                this.drawRect = function(x,y) {
+                    // X軸→Y軸の一マス分を塗りつぶす
+                    this.ctx.fillRect(
+                        x * this.wallSize,
+                        y * this.wallSize,
+                        this.wallSize,
+                        this.wallSize
+                    );
+                };                 
+            };
+
+            // リセットボタン
+            function reset() {
+                // Mazeオブジェクトをインスタンス化
+                var maze = new Maze(25, 25);
+                // 初期化
+                maze.init();
+                // 描画
+                maze.draw();
+            }
+
+            // 初期セット
+            reset();
+
+            // リセットボタン押下時
+            var startTime;
+            var timeoutId;
+            document.getElementById('reset').addEventListener('click', function() {
+                reset();
+                startTime = Date.now();
+                countup();
+            });
+
+            function countup() {
+                var time = new Date(Date.now() - startTime);
+                var timer = document.getElementById('timer');
+
+                var ms = String(time.getMilliseconds()).padStart(3, '0');
+                var s = String(time.getSeconds()).padStart(2, '0');
+                var m = String(time.getMinutes()).padStart(2, '0');
+                debugger;
+                timer.innerHTML = `${m}:${s}:${ms}`;
+
+                timeoutId = setTimeout(function() {
+                    countup();
+                }, 10);
+            }
+
+            document.getElementById('stop').addEventListener('click', function() {
+                clearTimeout(timeoutId);
+            });
+
+
+            
+
+        // この上に処理を記述する
+        })();
+
+        </script>
+    </body>
+</html>

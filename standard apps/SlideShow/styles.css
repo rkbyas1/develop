@@ -1,0 +1,82 @@
+.container {
+    width: 300px;
+    margin: 0 auto;
+}
+
+main {
+    margin-bottom: 8px;    
+}
+
+main img {
+    width: 300px;
+    height: 200px;
+    vertical-align: bottom;
+}
+
+.thumbnails {
+    display: grid;
+    /* 56px画像を5列で並べる */
+    grid-template-columns: repeat(5,56px);
+    /* 余白 */
+    gap: 5px;
+}
+
+.thumbnails img{
+    width: 56px;
+    vertical-align: bottom;
+}
+
+.thumbnails li {
+    opacity: 0.5;
+}
+
+.thumbnails li:hover {
+    opacity: 1;
+    cursor: pointer;
+}
+
+.thumbnails li.current {
+    opacity: 1;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+nav {
+    margin-bottom: 8px;
+}
+
+nav li {
+    width: 60px;
+    cursor: pointer;
+    border: 1px solid;
+    border-color: gray;
+    background: rgb(189, 178, 178);
+    border-radius: 4px;
+    font-size: 13px;
+    text-align: center;
+    padding: 4px;
+    
+}
+nav li:hover {
+    background: rgb(223, 213, 213);
+}
+nav li:active {
+    user-select: none;
+    margin-top: 2px;
+}
+
+nav ul {
+    display: flex;
+    justify-content: space-between;
+}
+
+nav ul #play,#pause {
+    width: 120px;
+}
+.hidden {
+    display: none;
+}

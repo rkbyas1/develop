@@ -1,0 +1,127 @@
+body {
+    font-family: 'Courier New', Courier, monospace;
+    background: lightsteelblue;
+}
+.container {
+    margin: 20px auto;
+    width: 200px;
+}
+.count {
+    color: white;
+    font-weight: bold;
+    font-size: 28px;
+    text-align: right;
+    margin-bottom: 15px;
+}
+.board {   
+    background: white;
+    height: 200px;
+    border-radius: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    padding: 0 16px 0 16px;
+}
+.board li {
+    background: rgb(66, 83, 236);
+    box-shadow: 0 4px 0 rgb(78, 16, 192);
+    border-radius: 6px;
+    margin: 18px auto; 
+    color: white;
+    font-weight: bold;
+    list-style: none;
+    height: 65px;
+    width: 65px;
+    cursor: pointer;
+    text-align: center;
+    font-size: 24px;
+    line-height: 65px;
+    user-select: none;
+}
+.board li:hover {
+    opacity: 0.6;
+    
+}
+.board li.pressed {
+    background: gray;
+    box-shadow: none;
+    margin: 20px auto;
+    /* margin-top: 23px; */
+}
+.start {
+    text-align: center;
+    margin-top: 14px;
+    background: red;
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+    height: 50px;
+    line-height: 50px;
+    border-radius: 8px;
+    box-shadow: 0 4px 0 rgb(184, 54, 54);
+    user-select: none;
+}
+.start:hover {
+    opacity: 0.6;
+    cursor: pointer;
+}
+.start:active {
+    margin-top: 18px;
+    box-shadow: 0 2px 0 rgb(184, 54, 54);
+}
+#result {
+    position: absolute;
+    width: 300px;
+    background: white;
+    padding: 40px;
+    box-shadow: 0 4px 8px rgb(104, 84, 84);
+    top: 80px;
+    left: 0;
+    right: 0;
+    margin: 70px auto 200px auto;
+    border-radius: 20px;
+    text-align: center;
+    transition: 0.8s;
+    font-size: 24px;
+    color: blue;
+    font-weight: bold;    
+    /* display: none; */
+}
+#result.hidden {
+    display: none;
+    transform: translateY(-500px);
+}
+#refresh {
+    text-align: center;
+    background: rgb(32, 172, 90);
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+    height: 50px;
+    line-height: 50px;
+    border-radius: 8px;
+    box-shadow: 0 4px 0 rgb(11, 94, 48);
+    user-select: none;
+    width: 200px;
+    margin: 16px auto;
+}
+#refresh:hover {
+    opacity: 0.6;
+    cursor: pointer;
+}
+#refresh:active {
+    margin-top: 22px;
+    box-shadow: 0 2px 0 rgb(11, 94, 48);
+}
+#displevel {
+    text-align: center;
+    background: rgb(142, 168, 24);
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+    height: 50px;
+    line-height: 50px;
+    border-radius: 8px;
+    user-select: none;
+    width: 200px;
+    margin: 16px auto;
+}

@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="utf-8">
+        <title>PinPonGame</title>
+        <link rel="stylesheet" href="css/styles.css">
+    </head>
+    <body>
+        <div id='container'>
+            <div id="score" class='hide'>SCORE</div>
+            <div id="result" class='hidden'>result</div>
+            <div id="msg" class='hidden'>msg</div>
+            <canvas width="280" height="280" id="mycanvas">
+                Canvas is not supported               
+            </canvas>           
+            <div id="btn">START</div>
+            <!-- <div id="x">x</div>
+            <div id="y">y</div> -->
+            <div id="stop" class='hidden'>PAUSE</div>
+            <div id="replay" class='hidden'>REPLAY</div>
+        </div>
+        
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script>
+            $(function() {
+                /** 変数宣言 */
+                var ctx,
+                myPaddle,
+                myBall,
+                score,
+                scoreLabel,
+                level,
+                levelLabel,
+                mouseX;
+
+                let timeoutId;
+                let stFlg = false;
+                let stpFlg = false;
+                let cnt = 0;
+                let stop = document.getElementById('stop');
+                let start = document.getElementById('btn');
+                let replay = document.getElementById('replay');
+                let xpoint = document.getElementById('x');
+                let ypoint = document.getElementById('y');
+                let result = document.getElementById('result');
+                let msg = document.getElementById('msg');
+                // 乱数値
+                // let randomNum = Math.floor(Math.random()*100);
+
+                replay.classList.add('hidden');
+
+                /** canvasが使えるかどうかを判定 */
+                var canvas = document.getElementById("mycanvas");
+                if(!canvas || !canvas.getContext) return false;
+                ctx = canvas.getContext('2d');
+
+                /** スコア描画*/
+                let Label = function(x,y) {
+                    this.x = x;
+                    this.y = y;
+                    this.draw = text => {
+                        ctx.font = 'bold 14px "Century Gothic"';
+                        ctx.fillStyle = 'blue';
+                        ctx.textAlign = 'left';
+                        ctx.fillText(text,this.x,this.y);
+                    }
+
+                };
+                /** レベル描画*/
+                let Level = function(x,y) {
+                    this.x = x;
+                    this.y = y;
+                    this.draw = text => {
+                        ctx.font = 'bold 14px "Century Gothic"';
+                        ctx.fillStyle = 'red';
+                        ctx.textAlign = 'right';
+                        ctx.fillText(text,this.x,this.y);
+                    }
+
+                };
+                /** パドルの設定 */
+                // パドルオブジェクトの設定
+                var Paddle = function(width, height) {
+                    this.w = width;
+                    this.h = height;
+                    this.x = canvas.width/2;
+                    this.y = canvas.height - 20;
+                    this.draw = function() {
+                        // パドルの色を設定
+                        ctx.fillStyle = "blue";
+                        // パドルを描画する
+                        ctx.fillRect(this.x-this.w/2, this.y, this.w, this.h)
+                    };
+                    this.move = function() {
+                        // this.x = mouseX;
+                        this.x = mouseX - $('#mycanvas').offset().left;
+                    }
+
+                };
+                // Ballオブジェクト
+                // ボールの半径座標x,yとvx vyは速度 rはボールの半径
+                var Ball = function(x,y,vx,vy,r) {
+                    // x座標
+                    this.x = x;
+                    // y座標
+                    this.y = y;
+                    // x座標の移動スピード(タイムアウト時間に移動する距離)
+                    this.vx = vx;
+                    // y座標の移動スピード(タイムアウト時間に移動する距離)
+                    this.vy = vy;
+                    // ボールの半径
+                    this.r = r;
+                    // ボールを描画する
+                    this.draw = function(){
+                        ctx.beginPath();
+                        ctx.fillStyle = 'red';
+                        ctx.arc(this.x,this.y,this.r,0,2*Math.PI,true);
+                        ctx.fill();
+                    };
+                    // moveメソッド
+                    this.move = function() {
+                        // 座標をリアルタイム表示
+                        // xpoint.innerHTML = `x:${this.x}`;
+                        // ypoint.innerHTML = `y:${this.y}`;
+
+                        // x,y座標を移動させる
+                        this.x += this.vx;
+                        this.y += this.vy;
+                        // 右端または左端に当たったらvxを反転させる
+                        if(this.x + this.r > canvas.width || this.x - this.r < 0){
+                            this.vx *= -1;
+                            // 上
+                        } else if(this.y - this.r < 0) {
+                            this.vy *= -1;
+                            // 下
+                        } else if(this.y > canvas.height){ 
+                            // 処理を止めて結果ボックスを表示 
+                            clearTimeout(timeoutId);
+                            $(stop).fadeOut();
+                            result.classList.remove('hidden');
+                            result.innerHTML = `${score} points`;
+                            replay.classList.remove('hidden');               
+                            return false;                                                                       
+                        }
+                    };
+                    // アロー関数も使えるよ
+                    this.checkCollision = paddle =>{
+                        // ボールがパドルに触れたら
+                        if((this.y + this.r > paddle.y)
+                        // ボールが左右のパドルの範囲に収まっていれば
+                          && (this.x > paddle.x - paddle.w/2 
+                            && this.x < paddle.x + paddle.w/2)) {
+                            // y方向にボールを反転
+                            this.vy *= -1;
+                            // スコアをプラス
+                            score++;
+                            // スコア3点入るごとにボール落下スピードを1.2倍にする
+                            if(score %  3 === 0) {
+                                // ボールスピードを1.2倍にする
+                                this.vx *= 1.2;
+                                // レベルアップ
+                                level++;
+                                // MSG表示
+                                msg.classList.remove('hidden');
+                                msg.innerHTML = 'LEVEL UP!';
+                                // MSGを隠す
+                                setTimeout(() => {
+                                    msg.classList.add('hidden');
+                                }, 1300);
+                            } 
+                        }
+                    }
+                }
+                function rand(max,min) {
+                    return Math.floor(Math.random()*(max-min))+min;
+                }
+                // オブジェクトを生成し、変数に代入
+                myPaddle = new Paddle(75,10);
+                myBall = new Ball(rand(250,50),rand(70,20),rand(3,8),rand(3,8),8);
+                scoreLabel = new Label(10,20);
+                score = 0;
+                scoreLabel.draw(`SCORE: ${score}`);
+                levelLabel = new Level(260,20);
+                level = 1;
+                levelLabel.draw(`LEVEL: ${level}`);
+
+                function clearStage() {
+                    ctx.fillStyle = 'lightblue';
+                    ctx.fillRect(0,0,canvas.width,canvas.height);
+                }
+                // パドルの描画と移動を繰り返す
+                function update() {
+                    clearStage();
+                    scoreLabel.draw(`SCORE: ${score}`);
+                    levelLabel.draw(`LEVEL: ${level}`);
+                    myPaddle.draw();
+                    myPaddle.move();
+                    myBall.draw();
+                    let flg = myBall.move();
+                    // 処理を抜ける
+                    if(flg === false) {
+                        return;
+                    }
+                    myBall.checkCollision(myPaddle);
+                    timeoutId = setTimeout(() => {
+                        update();
+                    }, 20);
+                }
+                
+                // document内でマウスが動いたらマウスのX座標を取る
+                $('body').mousemove(function(e) {
+                    mouseX = e.pageX;
+                });
+
+                // ストップボタンで一旦ストップ
+                $(stop).click(() => {
+                    clearTimeout(timeoutId);
+                    $(start).text('RESTART').fadeIn();
+                    $(stop).fadeOut();
+                    stFlg = false;
+                    stpFlg = true;
+                    
+                });
+                // スタートボタンでスタート(リスタートも)
+                function begin() {
+                    $(start).click(() => {   
+                        // 初期スタート処理
+                        if (stFlg === false) {
+                            result.classList.add('hidden');
+                            stFlg = true;
+                            $(start).fadeOut();
+                            $(stop).fadeIn();
+                            update();
+                        } else {
+                            return;
+                        }                                
+                    });
+                }
+                begin();
+
+                $(replay).click( () => {
+                    window.location.reload();
+                });
+                /** （JavaScriptでの記述でも動きます）*/
+                // start.addEventListener('click', ()=>{
+                //     update();
+                // });
+            });
+        </script>        
+    </body>
+</html>

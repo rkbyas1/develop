@@ -1,0 +1,32 @@
+body{
+    background: white;
+}
+
+#btn{
+    width: 200px;
+    height: 200px;
+    background-color: tomato;
+    border-radius: 50%;
+    margin: 50px auto;
+    text-align: center;
+    line-height: 180px;  /* 行の高さ */
+    color: white;
+    font-weight: bold;
+    font-size: 45px;
+    cursor: pointer;
+    box-shadow: 0 10px 0 red;
+    /* テキストの範囲選択をなしにする */
+    user-select: none;
+}
+
+/* マウスが上にある時 */
+#btn:hover{
+    opacity: 0.7;
+
+}
+/* クリックしている間 */
+#btn:active{
+    box-shadow: 0 5px 0 red;
+    margin-top: 56px;
+
+}

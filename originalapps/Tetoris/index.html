@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8">
+    <title>Tetoris</title>
+    <link rel="icon" href="images/tetoris.ico">
+    <h2>Tetoris</h2>
+    <link rel="stylesheet" href="css/style.css"> 
+</head>
+<body>
+    <div id="container">
+        <canvas width="250" height="500" id="droparea" style="background-image:url(images/bk2.jpg)">
+            Canvas not supported.
+        </canvas>
+        <div class="nextblock">
+            <canvas width="150" height="150" id="nextbox">
+                Canvas not supported.  
+            </canvas>
+            <div id="next">　NEXT:
+                <div id="points">　POINTS:</div>
+                <div class="btns">
+                    <div id="btn1">↺</div>
+                    <div id="movebtn">
+                        <div id="btn2">←</div>
+                        <div id="btn3">↓</div>
+                        <div id="btn4">→</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="js/main.js"></script>
+</body>
+<footer>
+    <h3>●以下バグ</h3>
+    <p>水色長ブロックを回転させた後の配置がおかしい</p>
+</footer>
+</html>

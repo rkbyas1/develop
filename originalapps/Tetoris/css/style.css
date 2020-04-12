@@ -1,0 +1,71 @@
+#next {
+    background: #425ccede;
+    width: 170px;
+    height: 500px;
+    color: #fff;
+    font-family: sans-serif;
+}
+#container {
+    display: flex;
+}
+.nextblock canvas{
+    position: absolute;
+    top: 100px;
+    left: 267px;
+}
+#points {
+    position: relative;
+    top: 155px;
+}
+.btns {
+    font-size: 18px;
+    user-select: none;
+    position: relative;
+    top: 363px;
+    color: #fff;
+}
+.btns:hover {
+    cursor: pointer;
+}
+#btn1 {
+    background: #081d58de;
+    width: 45px;
+    height: 40px;  
+    line-height: 40px;
+    text-align: center;
+    margin: 3px auto 1px auto;
+    
+}
+#movebtn {
+    margin-top: 1px;
+    display: flex;
+}
+#btn2 {
+    background: #081d58de;
+    width: 45px;
+    height: 40px;  
+    line-height: 40px;
+    text-align: center;
+    margin: 3px 1px 2px auto;
+}
+#btn3 {
+    background: #081d58de;
+    width: 45px;
+    height: 40px;  
+    line-height: 40px;
+    text-align: center;
+    margin: 3px 2px 2px 2px;
+}
+#btn4 {
+    background: #081d58de;
+    width: 45px;
+    height: 40px;  
+    line-height: 40px;
+    text-align: center;
+    margin: 3px auto 2px 1px;
+}
+#nextbox {
+    border: #fff solid 1px;
+    background:#ada4b1de;
+}
+

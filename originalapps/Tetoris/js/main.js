@@ -1,25 +1,39 @@
 'use strict';
 {
-    // canvas領域の取得
-    let droparea = document.getElementById("droparea");
-    let nextbox = document.getElementById("nextbox");
-    let ctx1 = droparea.getContext('2d');
-    let ctx2 = nextbox.getContext('2d');
+    // 領域の取得
+    const droparea = document.getElementById("droparea");
+    const nextbox = document.getElementById("nextbox");
+    const ctx1 = droparea.getContext('2d');
+    const ctx2 = nextbox.getContext('2d');
+    const point = document.getElementById("points");
+    const msg = document.getElementById('msg');
+    msg.classList.add('hidden');
+    const level = document.getElementById('level');
+    const stop = document.getElementById('pause');
 
     // その他変数
     let timeoutId;
     let isStarted = false;
+    let isMoved = false;
+    let deletedLines = 0;
     let cellsize = 25;
     let loopcnt = 0;
     let startX = cellsize * 2;
     let startY = 0;
+    let sx,sy;
     let blocks = [];
     let adjustedsize = cellsize - 1;
     let stageheight = droparea.height / cellsize;
     let stagewidth = droparea.width / cellsize;
     let virtualstage = [];
-    let nextblock,currentblock,type;
+    let nextblock,currentblock,type,rowIndex;
     let angle = 0;
+    let prevScore = 0;
+    let score = 0;
+    let speed = 1000;
+    let levelswitch = 3;
+    let lev = 1;
+    let paused;
 
     // 現在のステージ状態を二次元配列で定義
     virtualstage = new Array(stagewidth);
@@ -33,9 +47,9 @@
             // 水色長ブロック
             {
             shape: [[[-1, 1], [0, 1], [1, 1], [2, 1]],
-                    [[0, -1], [0, 0], [0, 1], [0, 2]],
-                    [[-1, 0], [0, 0], [1, 0], [2, 0]],
-                    [[0, -1], [0, 0], [0, 1], [0, 2]]],
+                    [[-1, -2], [-1, -1], [-1, 0], [-1, 1]],
+                    [[-1, 1], [0, 1], [1, 1], [2, 1]],
+                    [[-1, -2], [-1, -1], [-1, 0], [-1, 1]]],
                     color: '#0ff',
                     border: '#fff',
                     shadow: '#088',
@@ -43,10 +57,10 @@
             },
             // 黄色正方形ブロック
             {
-            shape: [[[0, 0], [1, 0], [0, 1], [1, 1]],
-                    [[0, 0], [1, 0], [0, 1], [1, 1]],
-                    [[0, 0], [1, 0], [0, 1], [1, 1]],
-                    [[0, 0], [1, 0], [0, 1], [1, 1]]],
+            shape: [[[-1, 0], [0, 0], [-1, 1], [0, 1]],
+                    [[-1, 0], [0, 0], [-1, 1], [0, 1]],
+                    [[-1, 0], [0, 0], [-1, 1], [0, 1]],
+                    [[-1, 0], [0, 0], [-1, 1], [0, 1]]],
                     color: '#ff0',
                     border: '#fff',
                     shadow: '#880',
@@ -77,7 +91,7 @@
             // 青色Ｌブロック
             {
             shape: [[[-1, 0], [-1, 1], [0, 1], [1, 1]],
-                    [[0, -1], [1, -1], [0, 0], [0, 1]],
+                    [[-1, -1], [0, -1], [-1, 0], [-1, 1]],
                     [[-1, 0], [0, 0], [1, 0], [1, 1]],
                     [[0, -1], [0, 0], [-1, 1], [0, 1]]],
                     color: '#00f',
@@ -88,7 +102,7 @@
             // オレンジＬブロック
             {
             shape: [[[1, 0], [-1, 1], [0, 1], [1, 1]],
-                    [[0, -1], [0, 0], [0, 1], [1, 1]],
+                    [[-1, -1], [-1, 0], [-1, 1], [0, 1]],
                     [[-1, 0], [0, 0], [1, 0], [-1, 1]],
                     [[-1, -1], [0, -1], [0, 0], [0, 1]]],
                     color: '#f90',
@@ -99,7 +113,7 @@
             // 紫凸ブロック
             {
             shape: [[[0, 0], [-1, 1], [0, 1], [1, 1]],
-                    [[0, -1], [0, 0], [1, 0], [0, 1]],
+                    [[-1, -1], [-1, 0], [0, 0], [-1, 1]],
                     [[-1, 0], [0, 0], [1, 0], [0, 1]],
                     [[0, -1], [-1, 0], [0, 0], [0, 1]]],
                     color: '#f0f',
@@ -109,7 +123,7 @@
             },
         ];
         return blocks;
-    }
+    }    
     
     /** nextブロック */
     let Blocks = function() {
@@ -131,7 +145,7 @@
                 adjustedPadY = 30;
             }
             if (nextblock.color == '#ff0') {
-                adjustedPadX = 50;
+                adjustedPadX = 75;
                 adjustedPadY = 40;
             }
             for (let i = 0; i < nextblock.shape[0].length; i++) {
@@ -179,58 +193,66 @@
         }
         // 指定秒数ごとに落下処理
         this.fallblock = function() {
-            ctx1.clearRect(0, 0, droparea.width, droparea.height);  
             this.createNewblock();
             timeoutId = setTimeout(() => {
                 this.fallblock();
-            }, 300);
+            }, speed);
         }
-        this.createNewblock = function() {
+        this.createNewblock = function() { 
             if (!isStarted) {
                 startY = -cellsize;
                 // 初回落下のみランダム
                 if (loopcnt == 0) {
                     currentblock = createBlocks()[Math.floor(Math.random() * blocks.length)];
                     type = blocks.indexOf(currentblock);
-                    console.log(type);
                 }
             }
-            
-
-            let sx = (startX + cellsize * 2) / cellsize;
-            let sy = (startY + cellsize) / cellsize;
+            sx = (startX + cellsize * 2) / cellsize;
+            sy = (startY + cellsize) / cellsize;
 
             // checkblockmoveの結果がfalseであれば落下停止
-            if (!this.checkblockmove(sx, sy)) {
+            if (this.checkblockmove(sx, sy) == 3) {
+                if (isMoved) {
+                    sx--;
+                }
                 this.fixblock(sx, sy);
             // 他ブロックに衝突していない且つ下まで来てない場合は落下継続
-            } else if (startY / cellsize < stageheight) {
+            } else {
+                this.redrawstage();
                 this.updatestage();
-                // メイン領域のブロック落下
-                for (let i = 0; i < currentblock.shape[angle].length; i++) {
-                    blks.drawCell(
-                        ctx1,
-                        currentblock.shape[angle][i][0] * cellsize + startX + cellsize * 2,
-                        currentblock.shape[angle][i][1] * cellsize + startY,
-                        currentblock.index
-                    );
-                }
-                startY += cellsize;
-                isStarted = true;
+                isMoved = false;
             }            
         }
+        // メイン領域のブロック落下
+        this.updatestage = function() {
+            for (let i = 0; i < currentblock.shape[angle].length; i++) {
+                blks.drawCell(
+                    ctx1,
+                    currentblock.shape[angle][i][0] * cellsize + startX + cellsize * 2,
+                    currentblock.shape[angle][i][1] * cellsize + startY,
+                    currentblock.index
+                );
+            }
+            startY += cellsize;
+            isStarted = true;
+        }
         // ブロック落下チェック
+        // return 1:左右上下移動可　2:上下のみ移動可　3:停止
         this.checkblockmove = function(sx, sy) {
             let cx, cy;
             for (let i = 0; i < blocks[type].shape[angle].length; i++) {
                 cx = sx + blocks[type].shape[angle][i][0];
                 cy = sy + blocks[type].shape[angle][i][1] - 1;
                 // 下まで来たら,または他ブロックに衝突したら落下停止
-                if (stageheight == sy || virtualstage[cx][cy] != null) {
-                    return false;
-                } 
+                if (stageheight <= cy || virtualstage[cx][cy] != null) {
+                    if (isMoved && virtualstage[cx][cy] != null) {
+                        return 2;
+                    } else {
+                        return 3;
+                    }
+                }
             }
-            return true;
+            return 1;
         }
         // ブロック落下を停止
         this.fixblock = function(x, y) {
@@ -240,8 +262,9 @@
                 cx = x + blocks[type].shape[angle][i][0];
                 cy = y + blocks[type].shape[angle][i][1] - 2;
                 virtualstage[cx][cy] = type;
-                console.log(virtualstage);
             }
+            this.deleteRow();
+
             // 描画クリア
             ctx2.clearRect(0, 0, nextbox.width, nextbox.height);
             clearTimeout(timeoutId);
@@ -249,11 +272,44 @@
             loopcnt++;
             // 最上部まで埋まったらゲームオーバー
             if (cy <= 0) {
-                const conf = confirm('Game Over.\nReplay?');
-                conf ? window.location.reload() : conf;
+                const replay = confirm(`Game Over. \nYour Score is ${score} \nReplay?`);
+                replay ? window.location.reload() : replay;
             }
-            this.updatestage();
-
+            // ステージを更新
+            this.redrawstage();
+            // 行消しがあればステージを再描画
+            if (deletedLines > 0) {
+                this.afterdelete();
+                switch (deletedLines) {
+                    case 1:
+                        score += deletedLines;
+                        break;
+                    case 2:
+                        score += deletedLines + 1;
+                        break;
+                    case 3:
+                        score += deletedLines + 2;
+                        break;
+                    case 4:
+                        score += deletedLines + 3;
+                        break;
+                }
+                point.innerHTML = `　SCORE:${score}`;
+                // 5ポイントごとに速度アップ
+                for (let i = score; i > prevScore; i--) {
+                    if (i % levelswitch == 0) {
+                        speed -= 100;
+                        lev++;
+                        msg.classList.remove('hidden');
+                        msg.innerHTML = `+${score - prevScore} Score! <br>LEVEL UP TO ${lev}`;
+                        level.innerHTML = `　LEVEL:${lev}`;
+                        setTimeout(() => {
+                            msg.classList.add('hidden');
+                        }, 500);
+                    }  
+                }
+                prevScore = score;
+            }
             // NEXTのブロックを現在ブロックに指定
             currentblock = nextblock;
             type = blocks[currentblock.index].index;
@@ -264,7 +320,8 @@
             angle = 0;
         }
         // fixした分をステージ状態に反映
-        this.updatestage = function() {       
+        this.redrawstage = function() {  
+            ctx1.clearRect(0, 0, droparea.width, droparea.height);      
             // virtualstageに基づきステージを再描画
             for (let x = 0; x < virtualstage.length; x++) {
                 for (let y = 0; y < virtualstage[x].length; y++) {
@@ -279,57 +336,239 @@
                 }
             }
         }
+        // 一行埋まったらその行を消去する
+        this.deleteRow = function() {
+            let cnt = 0;
+            let y2 = 0;
+            deletedLines = 0;
+            rowIndex = '';
+            for (let w = 0; w < virtualstage[0].length; w++) {
+                cnt = 0;
+                for (let x = 0; x < virtualstage.length; x++) {
+                    for (let y = y2; y < y2+1; y++) {
+                        virtualstage[x][y] != null ? cnt++ : cnt = 0;
+                        // 一行全てブロックが埋まっていたら値をnullにする
+                        if (cnt == stagewidth && x == 9) {
+                            for (let x2 = x; x2 >= 0; x2--) {
+                                virtualstage[x2][y] = null;
+                            }
+                            // 消去した行数
+                            deletedLines++;
+                            // 消去行のIndex番号
+                            rowIndex = y;
+                        }
+                    }
+                } 
+                y2++;
+            }
+        }
+        // 行消した後にvirtualstageを更新
+        this.afterdelete = function() {
+            for (let x = 0; x < virtualstage.length; x++) {
+                for (let y = rowIndex; y >= 0; y--) {
+                    if (y == 0) {
+                        continue;
+                    } else {
+                        virtualstage[x][y] = virtualstage[x][y-deletedLines];
+                    }
+                }
+            }
+        }
+        // ブロック情報を返却用メソッド
+        this.returnInfo = function() {
+            return {
+                t: type,
+                a: angle
+            }
+        }
     }
-    // ボタン操作各種
+    let current = new CurrentBlocks();  
+    current.startGame();
+       
+    /** ボタン操作各種*/ 
     let ManipulateBlocks = function() {
+        // info[t:type a:angle]
+        let info = current.returnInfo();
         // 回転
         this.rotate = function() {
+            isMoved = true
             angle++;
             if (angle > 3) {
                 angle = 0;
             }
+            // ブロック種類ごとに回転位置を調整
+            if (info.t == 0 && (info.a == 1 || info.a == 3)) {
+                startX -= cellsize*3;
+            }
+            if (info.t == 0 && (info.a == 0 || info.a == 2)) {
+                startX += cellsize*3;
+            }
+            if (info.t == 0 && sx < 3 && (info.a == 1 || info.a == 3)) {
+                startX += cellsize*3;
+            }
+            if (info.t == 0 && sx < 3 && (info.a == 0 || info.a == 2)) {
+                startX -= cellsize*3;
+            }
+            if ((info.t == 2 || info.t == 3 || info.t == 4 || info.t == 5 || info.t == 6) 
+                && (info.a == 1 || info.a == 3) && sx > 2) {
+                startX -= cellsize;
+            }
+            if ((info.t == 2 || info.t == 3 || info.t == 4 || info.t == 5 || info.t == 6) 
+                && (info.a == 0 || info.a == 2) && sx > 2) {
+                startX += cellsize;
+            }
+            // 移動後ブロックの位置を再描画
+            let bx = (startX + cellsize * 2) / cellsize;
+            let by = (startY + cellsize) / cellsize;
+            if (current.checkblockmove(bx, by) == 1) {
+                startY -= cellsize;
+                current.redrawstage();
+                current.updatestage();
+            } else {
+                return;
+            }
         }
         // 左移動
         this.moveLeft = function() {
-            if (startX >= -25) {
-                startX -= cellsize;          
+            // 移動後ブロックの位置を再描画
+            let bx = (startX + cellsize * 2) / cellsize;
+            let by = (startY + cellsize) / cellsize;
+            if (current.checkblockmove(bx, by) == 1) {
+                // 赤
+                if (sx > 1) {
+                    startX -= cellsize;     
+                }
+                startY -= cellsize;
+                current.redrawstage();
+                current.updatestage();
+            } else {
+                return;
             }
         }
         // 右移動
         this.moveRight = function() {
-            if (startX <= 250) {
+            isMoved = true;
+            // ブロック種類ごとに移動制限範囲を調整
+            if (info.t == 0 && (info.a == 0 || info.a == 2)) {
+                if (sx < stagewidth-3) {
+                    startX += cellsize;
+                }
+            }
+            if (info.t == 0 && (info.a == 1 || info.a == 3)) {
+                if (sx < stagewidth) {
+                    startX += cellsize
+                } 
+            }
+            if ((info.t == 2 || info.t == 3 || info.t == 4 || info.t == 5 || info.t == 6) 
+                && (info.a == 0 || info.a == 2)) {
+                if (sx < stagewidth-2) {
+                    startX += cellsize;
+                } 
+            
+            } else if (info.t != 0 && sx < stagewidth-1) {  
                 startX += cellsize;
+            }
+            // 移動後ブロックの位置を再描画
+            let bx = (startX + cellsize * 2) / cellsize;
+            let by = (startY + cellsize) / cellsize;
+            if (current.checkblockmove(bx, by) == 1) {
+                startY -= cellsize;
+                current.redrawstage();
+                current.updatestage();
+            }
+            if (current.checkblockmove(bx, by) == 2) {
+                startX -= cellsize;
+                startY -= cellsize;
+                current.redrawstage();
+                current.updatestage();
+            } else {
+                return;
             }
         }
         // 下移動
         this.moveBottom = function() {
-            startY += cellsize*2;
+            let bx = (startX + cellsize * 2) / cellsize;
+            let by = (startY + cellsize) / cellsize;
+            if (current.checkblockmove(bx, by) == 1) {
+                current.redrawstage();
+                current.updatestage();
+            } else {
+                return;
+            }
+        }
+        // 一時停止 
+        this.pause = function() {
+            if (!paused) {
+                clearTimeout(timeoutId);
+                paused = true;
+                stop.style.background = '#f0f';
+                stop.innerHTML = 'Restart';
+            } else {
+                current.startGame()
+                paused = false;
+                stop.style.background = '#0f0';
+                stop.innerHTML = 'Pause';
+            }
         }
     }
 
     // 回転
-    document.getElementById('btn1').addEventListener('click', () => {
+    const rot = document.getElementById('btn1');
+    rot.addEventListener('click', () => {
         let manipulate = new ManipulateBlocks();
         manipulate.rotate();
     });
+    
     // 左移動
-    document.getElementById('btn2').addEventListener('click', () => {
+    const left = document.getElementById('btn2');
+    left.addEventListener('click', () => {
         let manipulate = new ManipulateBlocks();
         manipulate.moveLeft();
     });
+
     // 右移動
-    document.getElementById('btn4').addEventListener('click', () => {
+    const right = document.getElementById('btn4');
+    right.addEventListener('click', () => {
         let manipulate = new ManipulateBlocks();
         manipulate.moveRight();
     });
+
     // 下移動
-    document.getElementById('btn3').addEventListener('click', () => {
+    const bottom = document.getElementById('btn3');
+    bottom.addEventListener('click', e => {
         let manipulate = new ManipulateBlocks();
         manipulate.moveBottom();
     });
+    
+    // 一時停止
+    stop.addEventListener('click', ()=> {
+        let manipulate = new ManipulateBlocks();
+        manipulate.pause();
+    });
 
-    let current = new CurrentBlocks();     
-    current.startGame();
+    // キーボードで操作の代用可
+    document.addEventListener('keydown', e => {
+        let manipulate = new ManipulateBlocks();
+        switch (e.keyCode) {
+            case 32:
+                manipulate.pause();
+                break;
+            case 37:
+                manipulate.moveLeft();
+                break;
+            case 38:
+                manipulate.rotate();
+                break;
+            case 39:
+                manipulate.moveRight();
+                break;
+            case 40:
+                manipulate.moveBottom();
+                break;
+        }
+    });
+
+
 
     
 

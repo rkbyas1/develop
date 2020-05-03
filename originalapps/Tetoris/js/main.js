@@ -31,7 +31,7 @@
     let prevScore = 0;
     let score = 0;
     let speed = 1000;
-    let levelswitch = 3;
+    let levelswitch = 5;
     let lev = 1;
     let paused;
 
@@ -240,28 +240,35 @@
         // return 1:左右上下移動可　2:上下のみ移動可　3:停止
         this.checkblockmove = function(sx, sy) {
             let cx, cy;
-            for (let i = 0; i < blocks[type].shape[angle].length; i++) {
-                cx = sx + blocks[type].shape[angle][i][0];
-                cy = sy + blocks[type].shape[angle][i][1] - 1;
-                // 下まで来たら,または他ブロックに衝突したら落下停止
-                if (stageheight <= cy || virtualstage[cx][cy] != null) {
-                    if (isMoved && virtualstage[cx][cy] != null) {
-                        return 2;
-                    } else {
-                        return 3;
+            try {
+                for (let i = 0; i < blocks[type].shape[angle].length; i++) {
+                    cx = sx + blocks[type].shape[angle][i][0];
+                    cy = sy + blocks[type].shape[angle][i][1] - 1;
+                    // 下まで来たら,または他ブロックに衝突したら落下停止
+                    if (stageheight <= cy || virtualstage[cx][cy] != null) {
+                        if (isMoved && virtualstage[cx][cy] != null) {
+                            return 2;
+                        } else {
+                            return 3;
+                        }
                     }
                 }
+                return 1;
+            } catch (e) {
+                console.log(e);
             }
-            return 1;
         }
         // ブロック落下を停止
         this.fixblock = function(x, y) {
             // virtualstageを更新
             let cx, cy;
-            for (let i = 0; i < blocks[type].shape[angle].length; i++) {
-                cx = x + blocks[type].shape[angle][i][0];
-                cy = y + blocks[type].shape[angle][i][1] - 2;
-                virtualstage[cx][cy] = type;
+            try {
+                for (let i = 0; i < blocks[type].shape[angle].length; i++) {
+                    cx = x + blocks[type].shape[angle][i][0];
+                    cy = y + blocks[type].shape[angle][i][1] - 2;
+                    virtualstage[cx][cy] = type;
+                }
+            } catch (e) {
             }
             this.deleteRow();
 
@@ -502,12 +509,12 @@
                 clearTimeout(timeoutId);
                 paused = true;
                 stop.style.background = '#f0f';
-                stop.innerHTML = 'Restart';
+                stop.innerHTML = '▶';
             } else {
                 current.startGame()
                 paused = false;
                 stop.style.background = '#0f0';
-                stop.innerHTML = 'Pause';
+                stop.innerHTML = '||';
             }
         }
     }

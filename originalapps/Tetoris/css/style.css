@@ -8,6 +8,10 @@
 #container {
     display: flex;
 }
+#msgcont {
+    display: block;
+    margin-top: 10px;
+}
 .nextblock canvas{
     position: absolute;
     top: 100px;
@@ -17,15 +21,29 @@
     position: relative;
     top: 155px;
 }
+#level {
+    position: relative;
+    top: 160px;
+}
 .btns {
     font-size: 18px;
     user-select: none;
-    position: relative;
-    top: 363px;
+    position: absolute;
+    top: 405px;
+    left: 270px;
     color: #fff;
 }
 .btns:hover {
     cursor: pointer;
+}
+#pause {
+    margin: 20px auto;
+    background: #0f0;
+    color: #000;
+    text-align: center;
+    width: 45px;
+    height: 45px;
+    line-height: 45px;
 }
 #btn1 {
     background: #081d58de;
@@ -67,5 +85,31 @@
 #nextbox {
     border: #fff solid 1px;
     background:#ada4b1de;
+}
+#msg {
+    position: absolute;
+    top: 220px;
+    left: 70px;
+    background: #f00;
+    width: 120px;
+    height: 60px;
+    padding-top: 10px;
+    text-align: center;
+    border-radius: 10px;
+    border: solid 2px #c489c4;
+    font-size: 14px;
+    line-height: 20px;
+}
+.hidden {
+    /* 一秒かけて非表示にする */
+    opacity: 0;
+    transition: 1s;
+}
+/* .dispnon {
+    display: none;
+} */
+footer {
+    float: right;
+    vertical-align: top;
 }
 

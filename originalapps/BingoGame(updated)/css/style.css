@@ -1,0 +1,108 @@
+h2 {
+    text-align: center;
+}
+#disparea {
+    height: 600px;
+    width: 600px;
+    background: #dfdfd8;
+    padding-top: 50px;
+    user-select: none;
+    font-family: 'arial';
+    position: relative;
+    margin: 5px auto;
+}
+#panel {
+    display: flex;
+    padding: 0;
+}
+#blk1 {
+    background: #fff;
+    height: 190px;
+    width: 190px;
+    margin: 10px auto 10px 100px;
+    text-align: center;
+    line-height: 190px;
+    border-radius: 10px;
+    font-size: 160px;
+    color: #00a0ff;
+    font-weight: bold;
+}
+#blk2 {
+    background: #fff;
+    height: 190px;
+    width: 190px;
+    margin: 10px 100px 10px auto;
+    text-align: center;
+    line-height: 190px;  
+    border-radius: 12px; 
+    font-size: 160px; 
+    color: #00a0ff;
+    font-weight: bold;
+}
+.spin {
+    background:  #ff3000;
+    height: 50px;
+    width: 130px;
+    margin: 20px auto;
+    border-radius: 4px;
+    text-align: center;
+    color: #fff;
+    font-size: 22px;
+    line-height: 50px;
+    cursor: pointer;
+    opacity: 0.8;
+    margin: 35px auto;
+}
+.spin:hover {
+    background: #ff3000;
+    border: solid 1px #837f83;
+    height: 48px;
+    width: 128px;
+    opacity: 1.0;  
+}
+.stop {
+    background: #356be0;
+    height: 50px;
+    width: 130px;
+    margin: 20px auto;
+    border-radius: 4px;
+    text-align: center;
+    color: #fff;
+    font-size: 22px;
+    line-height: 50px;
+    cursor: pointer;
+    opacity: 0.8;
+    margin: 35px auto;
+}
+.stop:hover {
+    background: #356be0;
+    border: solid 1px #837f83;
+    height: 48px;
+    width: 128px;
+    opacity: 1.0;   
+}
+table {
+    border-spacing: 7px;
+    color: #00a0ff;
+    font-weight: bold;
+    font-size: 16px;    
+    margin: auto;
+}
+.tdata {
+    background: #fff;
+    text-align: center;
+    width: 24px;
+    height: 26px;
+    opacity: 0.5;
+}
+#sign {
+    text-align: center;
+    color: #00a0ff;
+    font-weight: bold;
+    font-size: 13px;
+    margin-top: 50px;
+}
+.selected {
+    background: #ff0;
+    opacity: 1.0;
+}

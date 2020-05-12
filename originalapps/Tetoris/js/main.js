@@ -1,16 +1,12 @@
-'use strict';
-{
+(function() {
+    'use strict';
+
     // 領域の取得
     const droparea = document.getElementById("droparea");
-    const nextbox = document.getElementById("nextbox");
     const ctx1 = droparea.getContext('2d');
-    const ctx2 = nextbox.getContext('2d');
-    const point = document.getElementById("points");
     const msg = document.getElementById('msg');
     msg.classList.add('hidden');
-    const level = document.getElementById('level');
-    const stop = document.getElementById('pause');
-
+    
     // その他変数
     let timeoutId;
     let isStarted = false;
@@ -22,7 +18,6 @@
     let startY = 0;
     let sx,sy;
     let blocks = [];
-    let adjustedsize = cellsize - 1;
     let stageheight = droparea.height / cellsize;
     let stagewidth = droparea.width / cellsize;
     let virtualstage = [];
@@ -40,9 +35,9 @@
     for (let i = 0; i < virtualstage.length; i++) {
         virtualstage[i] = new Array(stageheight).fill(null);
     }
-    
+
     /** ブロックの定義*/ 
-    function createBlocks() {
+    let createBlocks = function() {
         blocks = [
             // 水色長ブロック
             {
@@ -126,10 +121,11 @@
     }    
     
     /** nextブロック */
-    let Blocks = function() {
+    let Blocks = function(ctx2) {
+        let adjustedsize = cellsize - 1;
         // NEXTブロックを表示する
         this.drawNext = function() {
-            nextblock = createBlocks()[Math.floor(Math.random() * blocks.length)];
+            nextblock = new createBlocks()[Math.floor(Math.random() * blocks.length)];
             // 表示位置の微調整
             let adjustedPadX,adjustedPadY;
             if (nextblock.color == '#00f' || nextblock.color == '#f90' || nextblock.color == '#f0f') {
@@ -182,9 +178,13 @@
             ctx.stroke();
         }
     }
-    /** メインブロック */
+    /** メインブロックの動き */
     let CurrentBlocks = function() {
-        let blks = new Blocks(); 
+        const nextbox = document.getElementById("nextbox");     
+        const ctx2 = nextbox.getContext('2d');
+        const point = document.getElementById("points");
+        const level = document.getElementById('level');
+        let blks = new Blocks(ctx2); 
         nextblock = blks.drawNext();
 
         // 以下、currentの処理
@@ -203,7 +203,7 @@
                 startY = -cellsize;
                 // 初回落下のみランダム
                 if (loopcnt == 0) {
-                    currentblock = createBlocks()[Math.floor(Math.random() * blocks.length)];
+                    currentblock = new createBlocks()[Math.floor(Math.random() * blocks.length)];
                     type = blocks.indexOf(currentblock);
                 }
             }
@@ -269,9 +269,9 @@
                     virtualstage[cx][cy] = type;
                 }
             } catch (e) {
+                console.log(e);
             }
             this.deleteRow();
-
             // 描画クリア
             ctx2.clearRect(0, 0, nextbox.width, nextbox.height);
             clearTimeout(timeoutId);
@@ -388,14 +388,10 @@
                 a: angle
             }
         }
-    }
-    let current = new CurrentBlocks();  
-    current.startGame();
-       
-    /** ボタン操作各種*/ 
-    let ManipulateBlocks = function() {
-        // info[t:type a:angle]
-        let info = current.returnInfo();
+    }        
+    /** ボタン操作と位置調整*/ 
+    let ManipulateBlocks = function(stop) {
+        let info = current.returnInfo();    // info[t:type a:angle]
         // 回転
         this.rotate = function() {
             isMoved = true
@@ -508,75 +504,82 @@
             if (!paused) {
                 clearTimeout(timeoutId);
                 paused = true;
-                stop.style.background = '#f0f';
+                stop.classList.add('paused');
                 stop.innerHTML = '▶';
             } else {
                 current.startGame()
                 paused = false;
-                stop.style.background = '#0f0';
+                stop.classList.remove('paused');
                 stop.innerHTML = '||';
             }
         }
     }
-
-    // 回転
-    const rot = document.getElementById('btn1');
-    rot.addEventListener('click', () => {
-        let manipulate = new ManipulateBlocks();
-        manipulate.rotate();
-    });
-    
-    // 左移動
-    const left = document.getElementById('btn2');
-    left.addEventListener('click', () => {
-        let manipulate = new ManipulateBlocks();
-        manipulate.moveLeft();
-    });
-
-    // 右移動
-    const right = document.getElementById('btn4');
-    right.addEventListener('click', () => {
-        let manipulate = new ManipulateBlocks();
-        manipulate.moveRight();
-    });
-
-    // 下移動
-    const bottom = document.getElementById('btn3');
-    bottom.addEventListener('click', e => {
-        let manipulate = new ManipulateBlocks();
-        manipulate.moveBottom();
-    });
-    
-    // 一時停止
-    stop.addEventListener('click', ()=> {
-        let manipulate = new ManipulateBlocks();
-        manipulate.pause();
-    });
-
-    // キーボードで操作の代用可
-    document.addEventListener('keydown', e => {
-        let manipulate = new ManipulateBlocks();
-        switch (e.keyCode) {
-            case 32:
-                manipulate.pause();
-                break;
-            case 37:
-                manipulate.moveLeft();
-                break;
-            case 38:
+    /**ブロックを動かす */
+    let moveBlocks = function() {
+        const stop = document.getElementById('pause');
+        const rot = document.getElementById('btn1');
+        const left = document.getElementById('btn2');
+        const right = document.getElementById('btn4');
+        const bottom = document.getElementById('btn3');
+        this.clickMove = function() {
+            // 回転
+            rot.addEventListener('click', () => {
+                const manipulate = new ManipulateBlocks(stop);
                 manipulate.rotate();
-                break;
-            case 39:
+            });
+            // 左移動
+            left.addEventListener('click', () => {
+                const manipulate = new ManipulateBlocks(stop);
+                manipulate.moveLeft();
+            });
+            // 右移動
+            right.addEventListener('click', () => {
+                const manipulate = new ManipulateBlocks(stop);
                 manipulate.moveRight();
-                break;
-            case 40:
+            });
+            // 下移動
+            bottom.addEventListener('click', e => {
+                const manipulate = new ManipulateBlocks(stop);
                 manipulate.moveBottom();
-                break;
+            });
+            // 一時停止
+            stop.addEventListener('click', ()=> {
+                const manipulate = new ManipulateBlocks(stop);
+                manipulate.pause();
+            });
         }
-    });
+        this.keyMove = function() {
+            // キーボードで操作の代用可
+            document.addEventListener('keydown', e => {
+                const manipulate = new ManipulateBlocks(stop);
+                switch (e.keyCode) {
+                    case 32:
+                        manipulate.pause();
+                        break;
+                    case 37:
+                        manipulate.moveLeft();
+                        break;
+                    case 38:
+                        manipulate.rotate();
+                        break;
+                    case 39:
+                        manipulate.moveRight();
+                        break;
+                    case 40:
+                        manipulate.moveBottom();
+                        break;
+                }
+            });
+        }
+    }
+
+    // オブジェクトをexecute
+    let current = new CurrentBlocks(); 
+    current.startGame();
+    let move = new moveBlocks(); 
+    move.clickMove();
+    move.keyMove();
 
 
 
-    
-
-}
+}());

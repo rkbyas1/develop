@@ -1,0 +1,57 @@
+html {
+    font-family: sans-serif;
+}
+body {
+    margin: 0;
+}
+#canvasarea {
+    background: #e0dede;
+}
+h2 {
+    text-align: center;
+    margin: 0;
+    margin: 10px auto;
+}
+#container {
+    text-align: center;
+}
+#label {
+    display: flex;
+}
+.start {
+    background: #008f00;
+    width: 150px;
+    height: 50px;
+    color: #fff;
+    font-weight: 900;
+    text-align: center;
+    line-height: 50px;
+    margin: 10px auto;
+    cursor: pointer;
+    user-select: none;
+    border-radius: 4px;
+}
+.pause {
+    background: #cf00ff;
+    width: 150px;
+    height: 50px;
+    color: #fff;
+    font-weight: 900;
+    text-align: center;
+    line-height: 50px;
+    margin: 10px auto;
+    cursor: pointer;
+    user-select: none;
+    border-radius: 4px;
+}
+#msg {
+    position: relative;
+    top: -100px;
+    font-size: 22px;
+    font-weight: 700;
+    color: #000090;
+}
+.hidden {
+    transition: 0.8s;
+    opacity: 0;
+}

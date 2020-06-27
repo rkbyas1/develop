@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>ShootingGame</title>
+        <link rel="icon" href="images/favicon.ico">
+        <h2>ShootingGame</h2>
+        <link rel="stylesheet" href="css/styles.css">
+        
+    </head>
+    <body>
+        <div id="container">
+            <div class="hidden">
+                <img src="images/enemy.png" alt="enemy" id="enemy">
+                <img src="images/player.png" alt="player" id="player">
+                <img src="images/enemybullet.png" alt="enemybullet" id="enemybullet">
+                <img src="images/playerbullet.png" alt="playerbullet" id="playerbullet">
+            </div>
+            <canvas width="400" height="500" id="canvasarea">
+                you need the browser which supports CANVAS TAGS is required.
+            </canvas>
+            <p>※press ENTER to pause</p>
+        </div>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="js/main.js"></script>
+        <div>弾の残り数★</div>
+        <div>ポーズ機能★</div>
+        <div>リトライ（クリアの場合は次レベルへ遷移？）</div>
+        <div>次レベルで敵機の種類を増やす</div>
+    </body>
+</html>

@@ -1,0 +1,12 @@
+h2 {
+    text-align: center;
+}
+#canvasarea {
+    background: #dedede;
+}
+#container {
+    text-align: center;
+}
+.hidden {
+    display: none;
+}

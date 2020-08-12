@@ -9,14 +9,11 @@ $(function() {
     const ctx = canvas.getContext('2d');
     const playerImg = document.getElementById('player');
     const enemyImg = document.getElementById('enemy');
-    const enemyImg2 = document.getElementById('enemy3');
-    const enemyImg3 = document.getElementById('enemy3');
     const playerbullet = document.getElementById('playerbullet');
     const enemybullet = document.getElementById('enemybullet');
     // 機能拡張より
     const pulseImg = document.getElementById('pulse');
     const seekerImg = document.getElementById('missiles');
-    const eseekerImg = document.getElementById('emissiles');
     // タイマー用
     let loopStart, ellapsedTime, pauseStart;
     let m,s;
@@ -115,8 +112,7 @@ $(function() {
             e_info[i][1] = {y: Math.floor(Math.random() * height/3)},
             e_info[i][2] = {hp: 3},
             e_info[i][3] = {isInit: true},
-            e_info[i][4] = {onceHit: false},
-            e_info[i][5] = {hp2: 8}
+            e_info[i][4] = {onceHit: false}
         }
     }
     defineEnemies();
@@ -124,51 +120,24 @@ $(function() {
     // 敵機弾丸を定義
     let ebullets = 10;
     let e_bullets;
-    let eseeker = 10;
-    let e_seeker;
     let defineEnemyBullets = function() {
-        this.laser = () => {
-            e_bullets = new Array(enemies);
-            for (let j = 0; j < enemies; j++) {
-                e_bullets[j] = new Array(ebullets);
-                for (let i = 0; i < ebullets; i++) {
-                    e_bullets[j][i] = new Array(3).fill(null);
-                }
-            }
-            // 弾丸初期値
-            for (let j = 0; j < enemies; j++) {
-                for (let i = 0; i < ebullets; i++) {
-                    e_bullets[j][i][0] = 0; // x
-                    e_bullets[j][i][1] = 0; // y
-                    e_bullets[j][i][2] = 0; // hp
-                }
+        e_bullets = new Array(enemies);
+        for (let j = 0; j < enemies; j++) {
+            e_bullets[j] = new Array(ebullets);
+            for (let i = 0; i < ebullets; i++) {
+                e_bullets[j][i] = new Array(3).fill(null);
             }
         }
-        this.seeker = () => {
-            e_seeker = new Array(enemies);
-            for (let j = 0; j < enemies; j++) {
-                if (j % 3 == 0) {
-                    e_seeker[j] = new Array(eseeker);
-                    for (let i = 0; i < eseeker; i++) {
-                        e_seeker[j][i] = new Array(3).fill(null);
-                    }
-                }
-            }
-            // 弾丸初期値
-            for (let j = 0; j < enemies; j++) {
-                if (j % 3 == 0) {
-                    for (let i = 0; i < eseeker; i++) {
-                        e_seeker[j][i][0] = 0; // x
-                        e_seeker[j][i][1] = 0; // y
-                        e_seeker[j][i][2] = 0; // hp
-                    }
-                }
+        // 弾丸初期値
+        for (let j = 0; j < enemies; j++) {
+            for (let i = 0; i < ebullets; i++) {
+                e_bullets[j][i][0] = 0; // x
+                e_bullets[j][i][1] = 0; // y
+                e_bullets[j][i][2] = 0; // hp
             }
         }
     }
-    const enemyBullets = new defineEnemyBullets();
-    enemyBullets.laser();
-    enemyBullets.seeker();
+    defineEnemyBullets();
 
     // その他変数
     let eSpeed = 2;
@@ -244,22 +213,12 @@ $(function() {
             // 敵機を描画
             for (let i = 0; i < enemies; i++) {
                 // 敵機hpが1以上の場合は描画
-                if (e_info[i][2].hp > 0 && e_info[i][5].hp2 > 0) {
-                    // 敵機1
-                    if (i % 3 != 0) {
-                        ctx.drawImage(
-                            enemyImg, 
-                            e_info[i][0].x, 
-                            e_info[i][1].y
-                        );
-                    // 敵機2
-                    } else {
-                        ctx.drawImage(
-                            enemyImg2, 
-                            e_info[i][0].x, 
-                            e_info[i][1].y
-                        );
-                    }
+                if (e_info[i][2].hp > 0) {
+                    ctx.drawImage(
+                        enemyImg, 
+                        e_info[i][0].x, 
+                        e_info[i][1].y
+                    );
                     // 初期表示時に敵数をカウント
                     if (e_info[i][3].isInit) {
                         restEnemies++;
@@ -267,23 +226,12 @@ $(function() {
                     }
                     // 敵機の弾丸を描画
                     for (let i = 0; i < enemies; i++) {
-                        // seeker
-                        if (i % 3 == 0) {
-                            for (let j = 0; j < eseeker; j++) {
-                                if (e_seeker[i][j][2] > 0 && e_seeker[i][j][1] > 0) {
-                                    ctx.drawImage(eseekerImg, e_seeker[i][j][0], e_seeker[i][j][1]);
-                                }
-                            }
-                        // laser
-                        } else {
-                            for (let j = 0; j < ebullets; j++) {
-                                if (e_bullets[i][j][2] > 0 && e_bullets[i][j][1] > 0) {
-                                    ctx.drawImage(enemybullet, e_bullets[i][j][0], e_bullets[i][j][1]);
-                                }
+                        for (let j = 0; j < ebullets; j++) {
+                            if (e_bullets[i][j][2] > 0 && e_bullets[i][j][1] > 0) {
+                                ctx.drawImage(enemybullet, e_bullets[i][j][0], e_bullets[i][j][1]);
                             }
                         }
                     }
-
                     // プレイヤー弾丸（laser）を描画
                     for (let i = 0; i < bullets; i++) {
                         // hpが1以上、yがcanvas枠内にある場合は描画
@@ -306,8 +254,7 @@ $(function() {
                         } 
                     }
                 // 撃墜したら残り敵機を減らす
-                } 
-                if ((e_info[i][2].hp <= 0 || e_info[i][5].hp2 <= 0) && !e_info[i][3].isInit) {
+                } else if (e_info[i][2].hp <= 0 && !e_info[i][3].isInit) {
                     restEnemies--;
                     shot++;
                     e_info[i][3].isInit = true;
@@ -325,7 +272,7 @@ $(function() {
             }
         }
         // ゲームクリア時（各ステージ）
-        if (restEnemies <= 0 && stage != 3) {
+        if (restEnemies <= 0 && stage != 2) {
             if (clearInterval <= 0) {
                 drawLabels('28px sans-serif', '#007','Game Clear', width/2-70, height/2);
                 drawLabels('18px sans-serif', '#00b','Press ENTER to Next Stage', width/2-100, height/2+30);
@@ -442,7 +389,7 @@ $(function() {
     // 敵機を動かす
     let moveEnemies = function() {
         for (let i = 0; i < enemies; i++) {
-            if (e_info[i][2].hp <= 0 || e_info[i][5].hp2 <= 0) {
+            if (e_info[i][2].hp <= 0) {
                 continue;
             } else {
                 // 下移動
@@ -453,21 +400,13 @@ $(function() {
                     e_info[i][1].y = 0;
                     e_info[i][4].onceHit = false;
                     // 弾丸HPをリセット
-                    // laser
                     for (let j = 0; j < ebullets; j++) {
                         e_bullets[i][j][2] = 0;
                     }
-                    // seeker
-                    if (i % 3 == 0) {
-                        for (let k = 0; k < eseeker; k++) {
-                            e_seeker[i][k][2] = 0;
-                        }
-                    }
                 }
             }
-            /** 敵弾丸発射*/ 
+            // 敵弾丸発射
             if (ebulletInterval == 0) {
-                // laser
                 for (let j = 0; j < ebullets; j++) {
                     // 発射していない弾がある場合は発射
                     if (e_bullets[i][j][2] == 0) {
@@ -478,21 +417,6 @@ $(function() {
                         e_bullets[i][j][2] = 1;
                         ebulletInterval = 30;
                         break;
-                    }
-                }
-                // seeker
-                if (i % 3 == 0) {
-                    for (let j = 0; j < eseeker; j++) {
-                        // 発射していない弾がある場合は発射
-                        if (e_seeker[i][j][2] == 0) {
-                            // 弾の初期位置はプレイヤーと同じ位置にする
-                            e_seeker[i][j][0] = e_info[i][0].x;
-                            e_seeker[i][j][1] = e_info[i][1].y;
-                            // 弾のHPを3にする
-                            e_seeker[i][j][2] = 3;
-                            ebulletInterval = 30;
-                            break;
-                        }
                     }
                 }
             } else if (ebulletInterval > 0) {
@@ -539,24 +463,13 @@ $(function() {
     // 敵機の弾丸移動
     let moveEnemyBullets = function() {
         for (let i = 0; i < enemies; i++) {
-            if (i % 3 == 0) {
-                for (let j = 0; j < eseeker; j++) {
-                    // hpが0以下の場合はスキップ
-                    if (e_seeker[i][j][2] <= 0) {
-                        continue;
-                    } else {
-                        e_seeker[i][j][1] += ebSpeed;
-                    }           
-                }
-            } else {
-                for (let j = 0; j < ebullets; j++) {
-                    // hpが0以下の場合はスキップ
-                    if (e_bullets[i][j][2] <= 0) {
-                        continue;
-                    } else {
-                        e_bullets[i][j][1] += ebSpeed;
-                    }           
-                }
+            for (let j = 0; j < ebullets; j++) {
+                // hpが0以下の場合はスキップ
+                if (e_bullets[i][j][2] <= 0) {
+                    continue;
+                } else {
+                    e_bullets[i][j][1] += ebSpeed;
+                }           
             }
         }
     }
@@ -581,8 +494,7 @@ $(function() {
         // プレイヤー弾丸to敵機
         this.pbulletsToEnemy = ()=> {
             for (let i = 0; i < enemies; i++) {
-                // 敵機1
-                if (e_info[i][2].hp > 0 && i % 3 != 0) {
+                if (e_info[i][2].hp > 0) {
                     for (let j = 0; j < amount; j++) {
                         if (pbullets_ar[j][2] <= 0) {
                             continue;
@@ -594,37 +506,26 @@ $(function() {
                         }
                     }
                 } 
-                // 敵機2
-                if (e_info[i][5].hp2 > 0 && i % 3 == 0) {
-                    for (let j = 0; j < amount; j++) {
-                        if (pbullets_ar[j][2] <= 0) {
-                            continue;
-                        }
-                        if (collision(pbullets_ar[j][0], pbullets_ar[j][1], image,
-                                            e_info[i][0].x, e_info[i][1].y, enemyImg2)) {
-                            pbullets_ar[j][2] -= 1;
-                            e_info[i][5].hp2 -= 1;
-                        }
-                    }
-                } 
             }  
         }
         // プレイヤー弾丸to敵弾丸
-        this.pbulletsToEbullets = i => {
-            for (let j = 0; j < ebullets; j++) {
-                if (p_info.hp > 0) {
-                    for (let k = 0; k < amount; k++) {
-                        if (ebullets_ar[i][j][2] <= 0 || pbullets_ar[k][2] <= 0) {
-                            continue;
-                        }
-                        if (collision(ebullets_ar[i][j][0], ebullets_ar[i][j][1], enemybullet,
-                                    pbullets_ar[k][0], pbullets_ar[k][1], image,)) {
-                            ebullets_ar[i][j][2] -= 1;
-                            pbullets_ar[k][2] -= 1;
+        this.pbulletsToEbullets = ()=> {
+            for (let i = 0; i < enemies; i++) {
+                for (let j = 0; j < ebullets; j++) {
+                    if (p_info.hp > 0) {
+                        for (let k = 0; k < amount; k++) {
+                            if (ebullets_ar[i][j][2] <= 0 || pbullets_ar[k][2] <= 0) {
+                                continue;
+                            }
+                            if (collision(ebullets_ar[i][j][0], ebullets_ar[i][j][1], enemybullet,
+                                        pbullets_ar[k][0], pbullets_ar[k][1], image,)) {
+                                ebullets_ar[i][j][2] -= 1;
+                                pbullets_ar[k][2] -= 1;
+                            }
                         }
                     }
                 }
-            } 
+            }
         }
     }
     // 衝突判定
@@ -641,7 +542,7 @@ $(function() {
                         startInterval = initstarInterval;
                     }
                 } 
-            } 
+            }  
             // プレイヤーと敵弾丸
             for (let i = 0; i < enemies; i++) {
                 for (let j = 0; j < ebullets; j++) {
@@ -658,23 +559,6 @@ $(function() {
                     }
                 }
             }
-            // 敵seekerの場合 
-            for (let i = 0; i < enemies; i++) {
-                if(i % 3 == 0) {
-                    for (let j = 0; j < eseeker; j++) {
-                        if (p_info.hp > 0) {
-                            if (e_seeker[i][j][2] <= 0) {
-                                continue;
-                            }
-                            if (collision(e_seeker[i][j][0], e_seeker[i][j][1], eseekerImg,
-                                            p_info.x, p_info.y, playerImg)) {
-                                p_info.hp -= e_seeker[i][j][2];
-                                startInterval = initstarInterval;
-                            }
-                        }
-                    }
-                }
-            } 
         } else if (startInterval > 0) {
             startInterval--;
         }
@@ -684,24 +568,12 @@ $(function() {
         new checkCommon(p_seeker, '', seekers, seekerImg).pbulletsToEnemy();
         // プレイヤーpulseと敵機
         new checkCommon(p_pulse, '', pulse, pulseImg).pbulletsToEnemy();
-        
-        // 敵弾丸とプレイヤー弾丸各種
-        for (let i = 0; i < enemies; i++) {
-            if (i % 3 == 0) {
-                // 敵seekerとプレイヤー弾丸各種
-                new checkCommon(p_bullets, e_seeker, bullets, playerbullet).pbulletsToEbullets(i);
-                new checkCommon(p_seeker, e_seeker, seekers, seekerImg).pbulletsToEbullets(i);
-                new checkCommon(p_pulse, e_seeker, pulse, pulseImg).pbulletsToEbullets(i);
-            } else {
-                // 敵弾丸とプレイヤー弾丸（レーザー）
-                new checkCommon(p_bullets, e_bullets, bullets, playerbullet).pbulletsToEbullets(i);
-                // 敵弾丸とプレイヤーseeker
-                new checkCommon(p_seeker, e_bullets, seekers, seekerImg).pbulletsToEbullets(i);
-                // 敵弾丸とプレイヤーpulse
-                new checkCommon(p_pulse, e_bullets, pulse, pulseImg).pbulletsToEbullets(i);
-            }
-        }
-
+        // 敵弾丸とプレイヤー弾丸（レーザー）
+        new checkCommon(p_bullets, e_bullets, bullets, playerbullet).pbulletsToEbullets();
+        // 敵弾丸とプレイヤーseeker
+        new checkCommon(p_seeker, e_bullets, seekers, seekerImg).pbulletsToEbullets();
+        // 敵弾丸とプレイヤーpulse
+        new checkCommon(p_pulse, e_bullets, pulse, pulseImg).pbulletsToEbullets();
     }
 
     // 一時停止（ポーズ）
@@ -883,21 +755,21 @@ $(function() {
             switch (level) {
                 // ノーマル
                 case 1:
-                    enemies += 2;
+                    enemies += 3;
                     remainb += 4*enemies;
                     remainSeeker += enemies;
                     remainPulse += 2*enemies;
                     break;
                 // ハード
                 case 2:
-                    enemies += 4;
+                    enemies += 5;
                     remainb += 3*enemies;
                     remainSeeker += Math.round(enemies/level);
                     remainPulse += Math.round(2*enemies/level);
                     break;
                 // エキスパート
                 case 3:
-                    enemies += 6;
+                    enemies += 8;
                     remainb += 3*enemies;
                     remainSeeker += Math.round(enemies/level);
                     remainPulse += Math.round(2*enemies/level);
@@ -905,8 +777,7 @@ $(function() {
                     break;
             }
             defineEnemies();
-            enemyBullets.laser();
-            enemyBullets.seeker();
+            defineEnemyBullets();
             playerBullets.laser(true);
             playerBullets.seeker();
             playerBullets.pulse();

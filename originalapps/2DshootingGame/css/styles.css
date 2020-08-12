@@ -10,3 +10,6 @@ h2 {
 .hidden {
     display: none;
 }
+#note {
+    text-align: center;
+}

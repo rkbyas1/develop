@@ -1,0 +1,83 @@
+<!doctype HTML>
+<html lang="JA">
+    <head>
+        <title>SubForm</title>
+        <h2>SubForm</h2>
+    </head>
+    <body>
+        <p>push button to get the number</p>
+        <input type="button" value="sendback" id="send">
+        <br>
+        <div id="sel">
+            
+        </div>
+        <br>
+        <script type="text/javascript">
+            let isExists = true;
+            const parentDisp = window.opener.document.getElementById('disp');
+            const table = window.opener.document.querySelector('table');
+            const cells = table.querySelectorAll('td');
+
+            // テーブルの値を取得する
+            function getTableData() {
+                const data = [];
+                for (const cell of cells) {
+                    if (cell.classList.contains('notSelected')) {
+                        data.push(cell.innerHTML);
+                    }
+                }
+                console.log(data);
+                return data;
+            }
+
+            // テーブルデータからランダムな値を取得
+            function getRandom() {
+                const array = getTableData();
+                let ranNum = array[Math.floor(Math.random() * array.length)];
+
+                if (array.length <= 0) {
+                    alert("finished!");
+                } else {
+                    return ranNum;
+                }
+                
+            }
+
+            // 親画面のセル色を変える
+            function changeColor() {
+                for (const cell of cells) {
+                    if (cell.innerHTML == parentDisp.innerHTML) {
+                        cell.classList.remove('notSelected');
+                        cell.style.backgroundColor = '#ff0';
+                    } else if (!cell.classList.contains('notSelected')) {
+                        cell.style.backgroundColor = '#cdcdcd';
+                    }
+                }
+            }
+
+            // 親画面に値を返す
+            function sendBack() {
+                if (!window.opener) {
+                    window.alert('親画面がありません');
+                    isExists = false;
+                } 
+                // シートからランダムに値を取得し、セル色を変える
+                if (isExists) {
+                    const sel = document.getElementById('sel');
+                    if (getRandom()) {
+                        sel.innerHTML = getRandom();
+                        parentDisp.innerHTML = sel.innerHTML;
+                        changeColor();
+                    }
+                }
+                window.close();
+            }
+            // クリックアクション
+            document.getElementById('send').addEventListener('click', ()=> {
+                sendBack();
+            });
+
+        </script>
+        <!-- <script src="js/main.js"></script> -->
+    </body>
+</html>

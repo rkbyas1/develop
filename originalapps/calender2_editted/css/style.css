@@ -1,0 +1,59 @@
+body {
+    font-family: 'Courier New', monospace;
+    font-size: 22px;
+    user-select: none;
+}
+#wrap table {
+    width: 400px;
+    margin: 0 auto;
+}
+h1,p {
+    text-align: center;
+}
+table {
+    border: 2px solid #cec;
+    border-collapse: collapse;
+}
+
+thead,tfoot {
+    background: #cec;
+    font-weight: bold;
+}
+th,td {
+    padding: 10px;
+    text-align: center;
+}
+
+tbody td:first-child {
+    color: #f00;
+}
+tbody td:last-child {
+    color: #00f;
+}
+
+td.disabled {
+    opacity: 0.3;
+}
+
+td.today {
+    font-weight: 800;
+}
+
+#prev, #next, #today, #title, #go, .yeardates{
+    cursor: pointer;
+    user-select: none;
+}
+
+#inp {
+    text-align: right;
+}
+#go {
+    text-align: left;
+}
+
+button {
+    cursor: pointer;
+}
+.hidden {
+    display: none;
+}

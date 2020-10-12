@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="utf-8">
+        <title>Calender</title>
+        <link rel="stylesheet" href="css/style.css">
+    </head>
+    <body>
+        <div id="wrap">
+            <h1>Calender</h1>
+            <p>
+                <button id="lastYear" class="hidden">&laquo;</button>
+                <button id="thisYear" class="hidden">THISYEAR</button>
+                <button id="nextYear" class="hidden">&raquo;</button>
+            </p>
+            <div id="tableWrap">
+                <table>
+                    <thead id="hdef">
+                        <tr>
+                            <th id="prev">&laquo;</th>
+                            <th id="title" colspan="5">2020/09</th>
+                            <th id="next">&raquo;</th>
+                        </tr>
+                        <tr>
+                            <th>Sun</th>
+                            <th>Mon</th>
+                            <th>Tue</th>
+                            <th>Wed</th>
+                            <th>Thu</th>
+                            <th>Fri</th>
+                            <th>Sat</th>
+                        </tr>
+                    </thead>
+                    <tbody id="bdef">   
+                        <!-- js処理にてappendする内容              -->
+                    </tbody>
+                    <tfoot id="fdef">
+                        <tr>
+                            <td id="today" colspan="7">Today</td>
+                        </tr>
+                        <tr>
+                            <td colspan="5" id="inp"><input type="date" id="date"></td>
+                            <td id="go" colspan="2">GO</td>
+                        </tr>
+                    </tfoot>
+                </table>      
+            </div>
+        </div>
+        <script src="js/main.js"></script>
+    </body>
+</html>

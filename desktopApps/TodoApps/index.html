@@ -1,0 +1,40 @@
+<html>
+    <head>
+        <title>My Todo List</title>   
+        <link rel="stylesheet" href="css/styles.css">
+    </head>
+<body>
+    <div id="wrap">
+        <h1>Todo List</h1>
+        <h3>◆Categories◆</h3>
+        <input type="radio" name="category" id="todos" checked="checked">
+        <label for="todos">直近の予定</label><br/>
+        <input type="radio" name="category" id="apps">
+        <label for="apps">作成アプリ・勉強</label><br/>
+        <input type="radio" name="category" id="blogs">
+        <label for="blogs">ブログテーマ</label><br/>
+        <input type="radio" name="category" id="wannabuy">
+        <label for="wannabuy">買いたいもの</label><br/>
+        <h3>◆Main List◆</h3>
+        <input type="text" id="contents" size="50">
+        <button type="button" id="add">ADD</button></br>
+        </br>
+        <button type="button" id="comp">COMPLETED</button>
+        <button type="button" id="reg">REGENERATE</button>
+        <button type="button" id="del">DELETE</button>
+        <button type="button" id="save">SAVE</button>
+        <button type="button" id="edit">EDIT</button>
+        <ul id="todosList"><div class="listTitle">ToDoList</div> 
+        </ul>
+        <ul id="appsList"><div class="listTitle">AppsList</div> 
+        </ul>
+        <ul id="blogsList"><div class="listTitle">BlogsList</div> 
+        </ul>
+        <ul id="wannabuyList"><div class="listTitle">WannabuyList</div> 
+        </ul>
+    </div>
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script> 
+        デスクトップアプリにjQueryは使えない-->
+    <script src="index.js"></script>
+</body>
+</html>

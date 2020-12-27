@@ -1,0 +1,69 @@
+body {
+    font-family:  Arial, sans-serif;
+}
+h1 {
+    text-align: center;
+}
+h1,h3 {
+    text-decoration: underline;
+    color: darkblue;
+}
+h3 {
+    font-size: 24px;
+}
+#wrap {
+    width: 500px;
+    margin: 0px auto;
+    background-color: #dedede;
+    border-radius: 12px;
+    padding: 20px;
+}
+ul li {
+    list-style: none;
+    cursor: pointer;
+    user-select: none;
+    font-size: 18px;
+}
+.listTitle {
+    font-weight: bold;
+    margin-bottom: 10px;
+    font-size: 20px;
+    color: darkblue;
+}
+.listTitle::before {
+    content: "●";
+}
+input {
+    padding: 4px;
+    border-radius: 4px;
+    background-color: #d7faf1;
+}
+label, input[type='checkbox'] {
+    cursor: pointer;
+}
+#add, #comp, #reg,#edit {
+    padding: 4px;
+    border-radius: 6px;
+    border-color: rgba(100, 100, 100, 0.3);
+    background-color: #aadfaa;
+    cursor: pointer;
+}
+#del {
+    padding: 4px;
+    border-radius: 6px;
+    border-color: rgba(100, 100, 100, 0.3);
+    background-color: #ffaed0;
+    cursor: pointer;
+}
+#save {
+    padding: 4px;
+    border-radius: 6px;
+    border-color: rgba(100, 100, 100, 0.3);
+    background-color: #c9e4f1;
+    cursor: pointer;
+}
+.completed {
+    opacity: 0.3;
+    text-decoration: line-through;
+}
+

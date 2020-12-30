@@ -1,36 +1,45 @@
 <html>
     <head>
-        <title>My Todo List</title>   
+        <title>Todo</title>   
         <link rel="stylesheet" href="css/styles.css">
     </head>
 <body>
     <div id="wrap">
-        <h1>Todo List</h1>
-        <h3>◆Categories◆</h3>
-        <input type="radio" name="category" id="todos" checked="checked">
-        <label for="todos">直近の予定</label><br/>
-        <input type="radio" name="category" id="apps">
-        <label for="apps">作成アプリ・勉強</label><br/>
-        <input type="radio" name="category" id="blogs">
-        <label for="blogs">ブログテーマ</label><br/>
-        <input type="radio" name="category" id="wannabuy">
-        <label for="wannabuy">買いたいもの</label><br/>
-        <h3>◆Main List◆</h3>
-        <input type="text" id="contents" size="50">
-        <button type="button" id="add">ADD</button></br>
-        </br>
-        <button type="button" id="comp">COMPLETED</button>
-        <button type="button" id="reg">REGENERATE</button>
-        <button type="button" id="del">DELETE</button>
-        <button type="button" id="save">SAVE</button>
-        <button type="button" id="edit">EDIT</button>
-        <ul id="todosList"><div class="listTitle">ToDoList</div> 
+        <h1>MyTodoList</h1>
+        <h3>◆カテゴリー◆</h3>
+        <div id="category">
+            <input type="radio" name="category" id="todos" checked="checked">
+            <label for="todos">主な予定</label><br/>
+            <input type="radio" name="category" id="apps">
+            <label for="apps">アプリ開発・勉強</label><br/>
+            <input type="radio" name="category" id="blogs">
+            <label for="blogs">ブログ</label><br/>
+            <input type="radio" name="category" id="wannabuy">
+            <label for="wannabuy">購入検討</label><br/>
+            <input type="radio" name="category" id="others">
+            <label for="others">その他メモ</label><br/>
+        </div>
+        <h3>◆内容◆</h3>
+        <div id="buttons">
+            <input type="text" id="contents" size="50">
+            <button type="button" id="add">追加</button></br>
+            </br>
+            <button type="button" id="comp">完了</button>
+            <button type="button" id="reg">完了解除</button>
+            <button type="button" id="del">削除</button>
+            <button type="button" id="save">保存</button>
+            <button type="button" id="edit">編集</button>
+        </div>
+        <h3>◆メイン◆</h3>
+        <ul id="todosList"><div class="listTitle">主な予定</div> 
         </ul>
-        <ul id="appsList"><div class="listTitle">AppsList</div> 
+        <ul id="appsList"><div class="listTitle">アプリ開発・勉強</div> 
         </ul>
-        <ul id="blogsList"><div class="listTitle">BlogsList</div> 
+        <ul id="blogsList"><div class="listTitle">ブログ</div> 
         </ul>
-        <ul id="wannabuyList"><div class="listTitle">WannabuyList</div> 
+        <ul id="wannabuyList"><div class="listTitle">購入検討</div> 
+        </ul>
+        <ul id="othersList"><div class="listTitle">その他メモ</div> 
         </ul>
     </div>
     <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script> 

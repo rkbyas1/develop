@@ -3,8 +3,9 @@ body {
 }
 h1 {
     text-align: center;
+    color: rgb(153, 55, 177);
 }
-h1,h3 {
+h3 {
     text-decoration: underline;
     color: darkblue;
 }
@@ -14,14 +15,13 @@ h3 {
 #wrap {
     width: 500px;
     margin: 0px auto;
-    background-color: #dedede;
+    background-color: #f5e7f2;
     border-radius: 12px;
     padding: 20px;
 }
 ul li {
     list-style: none;
     cursor: pointer;
-    user-select: none;
     font-size: 18px;
 }
 .listTitle {
@@ -38,25 +38,30 @@ input {
     border-radius: 4px;
     background-color: #d7faf1;
 }
-label, input[type='checkbox'] {
+
+label, input {
     cursor: pointer;
 }
+#category, h1, h3, #buttons, .listTitle {
+    user-select: none;
+}
+
 #add, #comp, #reg,#edit {
-    padding: 4px;
+    padding: 4px 10px;
     border-radius: 6px;
     border-color: rgba(100, 100, 100, 0.3);
     background-color: #aadfaa;
     cursor: pointer;
 }
 #del {
-    padding: 4px;
+    padding: 4px 10px;
     border-radius: 6px;
     border-color: rgba(100, 100, 100, 0.3);
     background-color: #ffaed0;
     cursor: pointer;
 }
 #save {
-    padding: 4px;
+    padding: 4px 10px;
     border-radius: 6px;
     border-color: rgba(100, 100, 100, 0.3);
     background-color: #c9e4f1;

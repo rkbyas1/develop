@@ -3,11 +3,11 @@ body {
 }
 h1 {
     text-align: center;
-    color: rgb(153, 55, 177);
+    color: rgb(0,0,0);
 }
 h3 {
     text-decoration: underline;
-    color: darkblue;
+    color: black;
 }
 h3 {
     font-size: 24px;
@@ -15,7 +15,7 @@ h3 {
 #wrap {
     width: 500px;
     margin: 0px auto;
-    background-color: #f5e7f2;
+    background-color: rgb(205, 227, 235);
     border-radius: 12px;
     padding: 20px;
 }
@@ -24,14 +24,14 @@ ul li {
     cursor: pointer;
     font-size: 18px;
 }
-.listTitle {
+div .listTitle {
     font-weight: bold;
     margin-bottom: 10px;
     font-size: 20px;
     color: darkblue;
 }
-.listTitle::before {
-    content: "●";
+div.listTitle::before {
+    content: "■";
 }
 input {
     padding: 4px;

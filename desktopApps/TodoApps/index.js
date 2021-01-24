@@ -4,6 +4,7 @@
     const appsList = document.getElementById('appsList');
     const blogsList = document.getElementById('blogsList');
     const wannabuyList = document.getElementById('wannabuyList');
+    const othersList = document.getElementById('othersList');
 
     const contents = document.getElementById('contents');
     let li;
@@ -11,6 +12,9 @@
 
     // 初期描画処理
     renderData();
+    // ドラッグ＆ドロップ対応
+    const el = document.querySelectorAll('li, div.listTitle');
+    [].forEach.call(el, addDraggAndDrop);
     
     // 描画用関数
     function renderData() {
@@ -32,6 +36,9 @@
                     case "wannabuy":
                         appendNode(val, wannabuyList);
                         break;
+                    case "others":
+                        appendNode(val, othersList);
+                        break;
                 }
             }
         }
@@ -39,6 +46,9 @@
 
     function appendNode(val, ulList) {
         li = document.createElement('li');
+        // ドラッグ＆ドロップ対応
+        li.draggable = true;
+
         // 再描画時にチェックを入れたり、スタイルを整えたり
         if (val.isCompleted) {
             li.classList.add("completed")
@@ -52,6 +62,103 @@
         // リストを完成させる
         li.appendChild(label);
         ulList.appendChild(li);
+    }
+
+    // li要素とイベントをドラッグイベントに渡す
+    function addDraggAndDrop(el) {
+        el.ondragstart = (e) => {
+            dragStart(e, el);
+        }
+        el.ondragenter = (e) => {
+            dragenter(e)
+        }
+        el.ondragover = (e) => {
+            dragover(e);
+        }
+        el.ondragleave = (e) => {
+            dragleave(e);
+        }
+        el.ondrop = (e) => {
+            drop(e);
+        }
+        el.ondragend = (e) => {
+            dragend(e);
+        }
+    }
+
+    function dragStart(e, dragElement) {
+        // dataTransfer
+        e.dataTransfer.setData('text/html', dragElement.outerHTML);
+        e.dataTransfer.effectAllowed = 'move';
+        // drop時の判別用にクラス追加
+        dragElement.classList.add('dragged');
+    }
+
+    function dragenter(e) {
+        e.preventDefault();
+    }
+
+    function dragover(e) {
+        // デフォルト動作の無効化
+        e.preventDefault();
+        // ドロップ可能にする
+        e.dataTransfer.dropEffect = 'move';
+    }
+
+    function dragleave(e) {
+
+    }
+
+    function drop(e) {
+        let switchFlg = false; //項目入れ替えフラグ
+
+        // ドロップ先の要素
+        const droparea = e.currentTarget;
+        
+        const lis = document.querySelectorAll('li');
+        // ドラッグした要素を元の位置から削除
+        for (const li of lis) {
+            // ドロップ先とドロップ対象が同じでなければdrop実行
+            if (li.classList.contains('dragged') && droparea != li && !switchFlg) {
+                li.parentNode.removeChild(li);
+                switchFlg = true;
+            }
+        }
+        // draggedクラスを全てクリア
+        const lis2 = document.querySelectorAll('li');
+        for (const li of lis2) {
+            if (li.classList.contains('dragged')) {
+                li.classList.remove('dragged');
+            }
+        }
+        if (switchFlg) {
+            // ドラッグした要素をテキスト形式で取得
+            const dropHtml = e.dataTransfer.getData('text/html');
+            // ドロップ先要素の直前にドラッグした要素を挿入
+            droparea.insertAdjacentHTML('afterend', dropHtml);
+            // ドロップ元の要素
+            const dropItem = droparea.nextSibling;
+    
+            // 移動した要素のカテゴリがドロップ先リストのカテゴリと異なれば書き換える
+            const oldCategory = dropItem.firstChild.className; //元のカテゴリ
+            const newCategory = droparea.localName == 'div' ? droparea.classList[0] : droparea.firstChild.className; //移動先カテゴリ   
+   
+            if (oldCategory != newCategory) {
+                // labelとinputについてそれぞれクラスを付け替え
+                dropItem.firstChild.classList.remove(oldCategory);
+                dropItem.firstChild.firstChild.classList.remove(oldCategory);
+                dropItem.firstChild.classList.add(newCategory);
+                dropItem.firstChild.firstChild.classList.add(newCategory);
+            }      
+            // 移動した要素が再度ドラッグ＆ドロップできるように設定
+            addDraggAndDrop(dropItem);
+            // ローカルストレージの書き換え
+            save();      
+        }
+    }
+
+    function dragend(e) {
+
     }
    
     // タスク追加関数
@@ -77,6 +184,10 @@
 
         // input欄を空白にする
         contents.value = "";
+
+        // ドラッグ＆ドロップ可能とする
+        li.draggable = true;
+        addDraggAndDrop(li);
     }
 
     // 分類を判定する関数
@@ -97,6 +208,9 @@
                         break;
                     case 'wannabuy':
                         addTask(wannabuyList, "wannabuy");
+                        break;
+                    case 'others':
+                        addTask(othersList, "others");
                         break;
                 }
             }
@@ -128,8 +242,8 @@
 
     // 保存処理
     function save() {
-        const input = document.querySelectorAll('input.todos, input.apps, input.blogs, input.wannabuy');
-        const label = document.querySelectorAll('label.todos, label.apps, label.blogs, label.wannabuy');
+        const input = document.querySelectorAll('input.todos, input.apps, input.blogs, input.wannabuy, input.others');
+        const label = document.querySelectorAll('label.todos, label.apps, label.blogs, label.wannabuy, label.others');
         registStorage(input, label);
     }
     // ストレージ登録
@@ -152,6 +266,9 @@
             if (lists[i].classList.contains("wannabuy")) {
                 category = "wannabuy";
             }
+            if (lists[i].classList.contains("others")) {
+                category = "others";
+            }
             li[i].classList.contains("completed") ? compFlg = true : compFlg = false;
             storageList.push({title:label[i].innerText, isDone:lists[i].checked, isCompleted:compFlg, category:category});
             // json→文字列形式に変換して保存
@@ -162,8 +279,8 @@
 
     // 編集用関数
     function editItem() {
-        const input = document.querySelectorAll('input.todos, input.apps, input.blogs, input.wannabuy');
-        const label = document.querySelectorAll('label.todos, label.apps, label.blogs, label.wannabuy');
+        const input = document.querySelectorAll('input.todos, input.apps, input.blogs, input.wannabuy, input.others');
+        const label = document.querySelectorAll('label.todos, label.apps, label.blogs, label.wannabuy, label.others');
         const li = document.querySelectorAll('li');
         let loopExit = false;
         let cnt = 0;
@@ -175,7 +292,7 @@
                     contents.value = label[i].innerText;
                     // 編集中フラグをオンにし、EDITボタン→UPDATEボタンに変更
                     isEdited = true;
-                    document.getElementById('edit').innerHTML = "UPDATE";
+                    document.getElementById('edit').innerHTML = "更新";
                     loopExit = true;
                     cnt++;
                 }
@@ -187,8 +304,8 @@
     }
     // 更新用関数
     function updateItem() {
-        const input = document.querySelectorAll('input.todos, input.apps, input.blogs, input.wannabuy');
-        const label = document.querySelectorAll('label.todos, label.apps, label.blogs, label.wannabuy');
+        const input = document.querySelectorAll('input.todos, input.apps, input.blogs, input.wannabuy, input.others');
+        const label = document.querySelectorAll('label.todos, label.apps, label.blogs, label.wannabuy, label.others');
         const li = document.querySelectorAll('li');
         let loopExit = false;
         let cnt = 0;
@@ -209,7 +326,7 @@
 
                     // 編集中フラグをオフにし、UPDATEボタン→EDITボタンに変更
                     isEdited = false;
-                    document.getElementById('edit').innerHTML = "EDIT";
+                    document.getElementById('edit').innerHTML = "編集";
                     loopExit = true;
                     cnt++;
                 }
@@ -233,7 +350,7 @@
 
     // COMPLETEボタンでtodoを完了
     document.getElementById('comp').onclick = () => {
-        const lists = document.querySelectorAll('input.todos, input.apps, input.blogs, input.wannabuy');
+        const lists = document.querySelectorAll('input.todos, input.apps, input.blogs, input.wannabuy, input.others');
         const li = document.querySelectorAll('li');
 
         for (let i = 0; i < lists.length; i++) {
@@ -245,7 +362,7 @@
     }
     // REGENERATEボタンで完了したTODOを復活
     document.getElementById('reg').onclick = () => {
-        const lists = document.querySelectorAll('input.todos, input.apps, input.blogs, input.wannabuy');
+        const lists = document.querySelectorAll('input.todos, input.apps, input.blogs, input.wannabuy, input.others');
         const li = document.querySelectorAll('li');
 
         for (let i = 0; i < lists.length; i++) {
@@ -267,6 +384,7 @@
         // 編集中であれば編集不可、updateのみ可能
         } else {
             updateItem();
+            save();
         }
     }
 

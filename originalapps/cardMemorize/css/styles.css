@@ -1,0 +1,22 @@
+body {
+    width: 600px;
+    margin: 0 auto;
+}
+#header {
+    display: flex;
+    float: right;
+}
+#help {
+    margin-right: 5px;
+    margin-left: 50px;
+}
+table {
+    border-spacing: 5px;
+    margin-top: 10px;
+    margin-right: 0;
+    user-select: none;
+}
+td {
+    padding: 0;
+    cursor: pointer;
+}

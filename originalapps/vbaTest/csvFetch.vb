@@ -1,14 +1,19 @@
 Option Explicit
 
 Sub CsvToExcel()
+    
     Dim myFileName As Variant
     Dim Fcn As Long
     Dim i As Long
     Dim buf As String
     Dim tmp As Variant
+    Dim pos As String, FileName As String, PathName As String
 
     myFileName = Application.GetOpenFilename(FileFilter:="CSVファイル(*.csv),*.csv", _
-                                                                          Title:="CSVファイルの選択")
+                                                                    Title:="CSVファイルの選択")
+    'ファイル名だけ切り出し
+    FileName = Dir(myFileName)
+    
     If myFileName = False Then
           Exit Sub
     End If
@@ -37,23 +42,33 @@ Sub CsvToExcel()
     Dim data() As String
     Dim row_no As Long
     Dim added As Boolean
+    Dim SheetNo As Long
     index = 1
     row_no = 1
     added = False
     Fcn = 1
+    SheetNo = 1
     
+    'ブックを追加し、アクティブ化する
+    Call CreateNewBook(FileName)
+    
+    'ヘッダ行読み飛ばし
+    Line Input #1, buf
+    'CSVデータ行を一行ずつ読込み
     Do Until EOF(1)
         Line Input #1, buf
-        Fcn = Fcn + 1
+        Fcn = Fcn + 1 '
         tmp = Split(buf, ",")
-        
+
         '書き出し
         For i = LBound(tmp) To UBound(tmp)
-            '前行と同日付なら追加
+            '1行目以降の場合
             If row_no <> 1 Then
+                '前行と同発注番号の場合
                 If data(row_no - 2) = tmp(6) Then
                     'Excelへの書込関数を呼び出す
                     Call WriteToExcel(i, Fcn, tmp, index)
+                '前行と異なる発注番号の場合
                 Else
                     '改シート
                     If Not added Then
@@ -68,6 +83,7 @@ Sub CsvToExcel()
                         Fcn = 2
                     End If
                 End If
+            '1行目の場合
             Else
                 'Excelへの書込関数を呼び出す
                 Call WriteToExcel(i, Fcn, tmp, index)
@@ -85,13 +101,37 @@ Sub CsvToExcel()
         row_no = row_no + 1
         'Sheets(1).Name = "0000" + CStr(index)
         Sheets(1).Name = tmp(6)
-        index = index + 1 '行番号用
+        index = index + 1
     Loop
     'ヘッダデータ取得、スタイル修正（関数呼び出し）
     Sheets(1).Cells(12, 5) = "番号："
     Sheets(1).Cells(12, 6) = tmp(6)
     Call AddStyles(Fcn + 1)
+    '不要シートの削除
+    Application.DisplayAlerts = False
+    Sheets(Array("Sheet2", "Sheet3")).Delete
+    Application.DisplayAlerts = True
     Close #1
+End Sub
+
+
+'ブックの追加関数
+Public Sub CreateNewBook(FileName As String)
+    Dim newBookName As String
+    Dim newBookPath As String
+    Dim newBook As Workbook
+    Dim objFileSys As Object
+    
+    '新しいファイルの名前を指定
+    newBookName = FileName
+    Set objFileSys = CreateObject("Scripting.FileSystemObject")
+    newBookName = objFileSys.GetBaseName(newBookName)
+    '新しいファイルのフルパスを設定
+    newBookPath = ThisWorkbook.Path & "\" & newBookName & ".xlsx"
+    '新しいファイルを作成
+    Set newBook = Workbooks.Add
+    '新しいファイルをVBAを実行したファイルと同じフォルダ保存
+    newBook.SaveAs newBookPath
 End Sub
 
 
@@ -140,6 +180,3 @@ Sub AddStyles(Fcn As Long)
         Columns(1).HorizontalAlignment = xlCenter
     End With
 End Sub
-
-
-

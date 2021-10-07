@@ -4,20 +4,22 @@ Sub CsvToExcel()
     
     Dim myFileName As Variant
     Dim Fcn As Long
-    Dim i As Long
+    Dim i As Long, j As Long
     Dim buf As String
     Dim tmp As Variant
     Dim pos As String, FileName As String, PathName As String
+    Dim arrLine As Variant 'カンマでsplitして格納
 
-    myFileName = Application.GetOpenFilename(FileFilter:="CSVファイル(*.CSV),*.CSV", _
+    myFileName = Application.GetOpenFilename(FileFilter:="csvファイル(*.csv),*.csv", _
                                                                     Title:="CSVファイルの選択")
-    'ファイル名だけ切り出し
-    FileName = Dir(myFileName)
-    
     If myFileName = False Then
           Exit Sub
     End If
+    
+    'ファイル名切り出し
+    FileName = Dir(myFileName)
 
+'番号、名前、部署、住所、郵便番号、金種、数量、単価、合計
 '    With Worksheets("Sheet1")
 '
 '        Open myFileName For Input As #1
@@ -38,6 +40,8 @@ Sub CsvToExcel()
 '    End With
     
     Open myFileName For Input As #1
+        Line Input #1, buf
+    Close #1
     Dim index As Long
     Dim data() As String
     Dim row_no As Long
@@ -52,22 +56,30 @@ Sub CsvToExcel()
     'ブックを追加し、アクティブ化する
     Call CreateNewBook(FileName)
     
-    'ヘッダ行読み飛ばし
-    Line Input #1, buf
-    'CSVデータ行を一行ずつ読込み
-    Do Until EOF(1)
-        Line Input #1, buf
-        Fcn = Fcn + 1 '
-        tmp = Split(buf, ",")
-
-        '書き出し
-        For i = LBound(tmp) To UBound(tmp)
-            '1行目以降の場合
-            If row_no <> 1 Then
+    '改行コード変換
+    tmp = Split(buf, vbLf)
+    '書き出し
+    For j = 0 To UBound(tmp)
+        If j = 0 Then
+            GoTo CONTINUE
+        Else
+            '要素追加管理
+            If j = 1 Then
+                ReDim data(1)
+                data(0) = tmp(0)
+            Else
+                ReDim Preserve data(UBound(data) + 1)
+                data(UBound(data) - 1) = arrLine(0)
+            End If
+        End If
+        arrLine = Split(tmp(j), ",")
+        For i = 0 To UBound(arrLine)
+            '3行目以降の場合
+            If j > 2 Then
                 '前行と同発注番号の場合
-                If data(row_no - 2) = tmp(0) Then
+                If data(row_no - 2) = arrLine(i) Then
                     'Excelへの書込関数を呼び出す
-                    Call WriteToExcel(i, Fcn, tmp, index)
+                    Call WriteToExcel(i, Fcn, arrLine(i), index)
                 '前行と異なる発注番号の場合
                 Else
                     '改シート関連処理
@@ -86,32 +98,78 @@ Sub CsvToExcel()
             '1行目の場合
             Else
                 'Excelへの書込関数を呼び出す
-                Call WriteToExcel(i, Fcn, tmp, index)
+                Call WriteToExcel(i, Fcn, arrLine(i), index)
             End If
         Next i
-        '要素追加管理
-        If row_no = 1 Then
-            ReDim data(1)
-            data(0) = tmp(0)
-        Else
-            ReDim Preserve data(UBound(data) + 1)
-            data(UBound(data) - 1) = tmp(0)
-        End If
         added = False
         row_no = row_no + 1
-        'Sheets(1).Name = "0000" + CStr(index)
-        Sheets(1).Name = tmp(0)
+        Sheets(1).Name = arrLine(0)
         index = index + 1
-    Loop
-    'ヘッダデータ取得、スタイル修正（関数呼び出し）
-    Sheets(1).Cells(2, 5) = "発注№："
-    Sheets(1).Cells(2, 6) = tmp(0)
-    Call AddStyles(Fcn + 1)
-    '不要シートの削除
-'    Application.DisplayAlerts = False
-'    Sheets(Array("Sheet2", "Sheet3")).Delete
-'    Application.DisplayAlerts = True
-    Close #1
+CONTINUE:
+    Next j
+
+
+
+    
+    'ヘッダ行読み飛ばし
+'    Line Input #1, buf
+'    'CSVデータ行を一行ずつ読込み
+'    Do Until EOF(1)
+'        Line Input #1, buf
+'        Fcn = Fcn + 1 '
+'        tmp = Split(buf, ",")
+'
+'        '書き出し
+'        For i = LBound(tmp) To UBound(tmp)
+'            '1行目以降の場合
+'            If row_no <> 1 Then
+'                '前行と同発注番号の場合
+'                If data(row_no - 2) = tmp(0) Then
+'                    'Excelへの書込関数を呼び出す
+'                    Call WriteToExcel(i, Fcn, tmp, index)
+'                '前行と異なる発注番号の場合
+'                Else
+'                    '改シート関連処理
+'                    If Not added Then
+'                        'ヘッダデータ取得、スタイル修正（関数呼び出し）
+'                        Call AddStyles(Fcn)
+'                        ' シート追加
+'                        Worksheets.Add
+'                        added = True
+'                        row_no = 1
+'                        index = 1
+'                        i = i - 1
+'                        Fcn = 9
+'                    End If
+'                End If
+'            '1行目の場合
+'            Else
+'                'Excelへの書込関数を呼び出す
+'                Call WriteToExcel(i, Fcn, tmp, index)
+'            End If
+'        Next i
+'        '要素追加管理
+'        If row_no = 1 Then
+'            ReDim data(1)
+'            data(0) = tmp(0)
+'        Else
+'            ReDim Preserve data(UBound(data) + 1)
+'            data(UBound(data) - 1) = tmp(0)
+'        End If
+'        added = False
+'        row_no = row_no + 1
+'        'Sheets(1).Name = "0000" + CStr(index)
+'        Sheets(1).Name = tmp(0)
+'        index = index + 1
+'    Loop
+'    'ヘッダデータ取得、スタイル修正（関数呼び出し）
+'    Sheets(1).Cells(2, 6) = tmp(0)
+'    Call AddStyles(Fcn + 1)
+'    '不要シートの削除
+''    Application.DisplayAlerts = False
+''    Sheets(Array("Sheet2", "Sheet3")).Delete
+''    Application.DisplayAlerts = True
+'    Close #1
 End Sub
 
 
@@ -136,7 +194,7 @@ End Sub
 
 
 'Excelへの書込関数
-Sub WriteToExcel(i As Long, Fcn As Long, tmp As Variant, index As Long)
+Sub WriteToExcel(i As Long, Fcn As Long, arrLine As Variant, index As Long)
     With Sheets(1)
         '発注番号は明細に追加しない
         If i = 0 Then
@@ -172,14 +230,14 @@ Sub AddStyles(Fcn As Long)
         Range("D8") = "数量"
         Range("E8") = "単価"
         Range("F8") = "金額"
-'        ' 合計を算出
+        ' 合計を算出
         Cells(Fcn, 3) = "※ 合　計"
         Cells(Fcn, 6) = WorksheetFunction.Sum(Range(Cells(9, 6), Cells(Fcn - 1, 6)))
-'        '金額形式の指定
+        '金額形式の指定
         Range(Cells(9, 4), Cells(Fcn, 6)).NumberFormatLocal = "#,###"
         Cells(2, 5) = "発注№："
         Cells(5, 4) = "御中"
-'        '明細ヘッダ色指定
+        '明細ヘッダ色指定
         Range(Cells(8, 2), Cells(8, 6)).Interior.Color = RGB(220, 230, 241)
         'フォント
         Range("A1:X100").Font.Name = "ＭＳ Ｐゴシック"

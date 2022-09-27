@@ -6,7 +6,7 @@ Sub SelectA1()
     Dim i As Integer
     
     'ブック内の全シートカウント
-    sc = ThisWorkbook.Sheets.Count
+    sc = ActiveWorkbook.Sheets.Count
     
     For i = 1 To sc
         '先頭のシートから見ていく
@@ -59,3 +59,4 @@ Sub OpenWorkbooks()
     Loop
 
 End Sub
+

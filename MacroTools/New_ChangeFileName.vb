@@ -8,6 +8,8 @@ Public isOk As Boolean
 Sub Add_text()
     Dim file As String, fso As Object
     Dim folderPath As String, addText As String, filePath As String
+    Dim cnt As Long
+    cnt = 0
     
     '対象ファイルがあるフォルダを取得し、配下のファイルを取得
     On Error GoTo out
@@ -21,7 +23,7 @@ Sub Add_text()
     
     'ファイルがあれば、付加する文字列を指定してもらう
     If file <> "" Then
-        addText = InputBox("ファイル名に追加する文字列を入力してください")
+        addText = InputBox("ファイル名に反映する文字を入力してください")
         If addText <> "" Then
 again:
             'ユーザフォームを表示
@@ -34,7 +36,9 @@ again:
         Set fso = CreateObject("Scripting.FileSystemObject")
         
         Application.ScreenUpdating = False
-            
+        
+        If Not isOk Then Exit Sub
+        
         '選択したフォルダ配下のファイルを全て読み込む
         Do While file <> ""
             'フォルダ＋ファイル名を取得
@@ -43,21 +47,30 @@ again:
                 If selectValue = "後方" Then
                     'ファイル名最後部に追加
                     fso.GetFile(filePath).Name = Replace(file, ".", "_" & addText & ".")
+                    cnt = cnt + 1
                 ElseIf selectValue = "先頭" Then
                      'ファイル名先頭に追加
                     fso.GetFile(filePath).Name = Replace(file, file, addText & "_" & file)
+                    cnt = cnt + 1
                 Else
-                    '入力項目不足あれば処理抜け
+                    '文字指定の場合に入力項目不足あれば処理抜け
                     If selectValue <> "" And addPosChar <> "" Then
                         '該当ファイルある場合のみ処理
                         If file Like "*" & addPosChar & "*" Then
-                            '（特定の文字の後側に付加）追加文字+元ファイルの文字の値で元ファイル名の一部をreplace
-                            fso.GetFile(filePath).Name = Replace(file, addPosChar, addPosChar & "_" & addText)
+                            '置換の場合
+                            If selectValue = "置換" Then
+                                fso.GetFile(filePath).Name = Replace(file, addPosChar, addText)
+                            Else
+                                '（特定の文字の後側に付加）追加文字+元ファイルの文字の値で元ファイル名の一部をreplace
+                                fso.GetFile(filePath).Name = Replace(file, addPosChar, addPosChar & "_" & addText)
+                            End If
+                            cnt = cnt + 1
                         End If
                     Else
                         'OKの場合は入力しなおし、×やcancelした場合は処理抜け
                         If isOk Then
-                            MsgBox "入力項目不足です", vbExclamation
+                            MsgBox "入力項目が不足しています", vbExclamation
+                            'やり直し
                             GoTo again
                         Else
                             Exit Sub
@@ -66,13 +79,14 @@ again:
                     
                 End If
                 
+            
             '次のファイルへ
             file = Dir()
         Loop
         
         Application.ScreenUpdating = True
         
-        MsgBox "ファイル名への追加が完了しました", vbInformation
+        MsgBox cnt & "件のファイル名へ追加が完了しました", vbInformation
     Else
         MsgBox "配下に対象ファイルがありません", vbInformation
         Exit Sub
@@ -137,21 +151,18 @@ Sub Remove_text()
         '変換できないものをカウント
         If Err.Number = 58 Then
             errCnt = errCnt + 1
+        Else
+            cnt = cnt + 1
         End If
         
         '次のファイルへ
-        cnt = cnt + 1
         file = Dir()
     Loop
     
     Application.ScreenUpdating = True
-    
-    '変換できなかったファイルを含む場合と正常終了の場合
-    If errCnt > 0 Then
-        MsgBox "除去できなかったファイルが" & errCnt & "件あります", vbExclamation
-    Else
-        MsgBox cnt & "件のファイル名の修正が完了しました", vbInformation
-    End If
+  
+    '終了ダイアログ
+    MsgBox cnt & "件のファイル名の修正が完了しました", vbInformation
   
 'エラーハンドリング
 out:

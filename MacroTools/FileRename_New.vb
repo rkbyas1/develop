@@ -8,40 +8,61 @@ Public is_Ok As Boolean
 'その他変数
 Dim addtext As String, filePath As String
 Dim FSO As Scripting.FileSystemObject
+Dim cnt As Long
 
 'ファイル名に文字を追加する機能（先頭のみに追加するやつの上位互換）
 Sub ExecuteFileRename()
     Dim folderPath As String
+    Dim fileName As String
+    Dim folderCnt As Integer
+    cnt = 0
     
+    'ファイル操作オブジェクト生成
     Set FSO = CreateObject("Scripting.FileSystemObject")
      
     '対象ファイルがあるフォルダを取得し、配下のファイルを取得
-    On Error GoTo out
+'    On Error GoTo out
     With Application.FileDialog(msoFileDialogFolderPicker)
         .Show
         folderPath = .SelectedItems(1)
     End With
     
-    '★folderPath配下にsubfolderもファイルもなければ対象ファイルなしとメッセージ出したい★
-      
-    'ダイアログで入力促す
-    addtext = InputBox("ファイル名に追加する文字列を入力してください")
+    'folderPath配下にsubfolderもファイルもなければ対象ファイルなしとメッセージを出す
+    fileName = Dir(folderPath & "\*.*")
+    folderCnt = FSO.GetFolder(folderPath).subFolders.Count
     
-    If addtext <> "" Then
-        'ユーザフォームを表示
-        AddTextForm.Show
-        
-        '配下フォルダとファイルについての処理
-        Call DoFolders(FSO, folderPath, addtext)
-        MsgBox "ファイル名への追加が完了しました", vbInformation
+    If folderCnt < 1 And fileName = "" Then
+        MsgBox "サブフォルダまたはファイルがありません", vbExclamation
     Else
-        MsgBox "値が入力されませんでした", vbInformation
-        Exit Sub
+        'ダイアログで入力促す
+        addtext = InputBox("ファイル名に追加する文字列を入力してください")
+        
+        If addtext <> "" Then
+            Call DisplayUserForm(FSO, folderPath, addtext)
+        Else
+            MsgBox "値が入力されませんでした", vbInformation
+            Exit Sub
+        End If
     End If
-
-out:
+      
+'out:
 
 End Sub
+
+
+Sub DisplayUserForm(FSO As Object, folderPath As String, addtext As String)
+    'ユーザフォームを表示
+    AddTextForm.Show
+    
+    If is_Ok Then
+        '配下フォルダとファイルについての処理
+        Call DoFolders(FSO, folderPath, addtext)
+        If cnt > 0 Then
+            MsgBox cnt & "件のファイル名の修正が完了しました", vbInformation
+        End If
+    End If
+End Sub
+
 
 'フォルダに対しての処理
 Sub DoFolders(FSO As Object, folderPath As String, addtext As String)
@@ -54,6 +75,7 @@ Sub DoFolders(FSO As Object, folderPath As String, addtext As String)
         Call DoFolders(FSO, folder.Path, addtext)
     Next
     
+    'ファイルについての処理
     Call DoFiles(folderPath, addtext)
 
     Application.ScreenUpdating = True
@@ -79,21 +101,34 @@ Sub DoFiles(folderPath As String, addtext As String)
             If select_Val = "後方" Then
                 'ファイル名最後部に追加
                 FSO.GetFile(filePath).Name = Replace(file, ".", "_" & addtext & ".")
+                cnt = cnt + 1
             ElseIf select_Val = "先頭" Then
                  'ファイル名先頭に追加
                 FSO.GetFile(filePath).Name = Replace(file, file, addtext & "_" & file)
+                cnt = cnt + 1
             Else
                 '入力項目不足あれば処理抜け
                 If select_Val <> "" And addPos_Char <> "" Then
                     '該当ファイルある場合のみ処理
                     If file Like "*" & addPos_Char & "*" Then
-                        '（特定の文字の後側に付加）追加文字+元ファイルの文字の値で元ファイル名の一部をreplace
-                        FSO.GetFile(filePath).Name = Replace(file, addPos_Char, addPos_Char & "_" & addtext)
+                        '置換の場合
+                        If select_Val = "置換" Then
+                            FSO.GetFile(filePath).Name = Replace(file, addPos_Char, addtext)
+                            cnt = cnt + 1
+                        ElseIf select_Val = "削除" Then
+                            FSO.GetFile(filePath).Name = Replace(file, addPos_Char, "")
+                            cnt = cnt + 1
+                        Else
+                            '（特定の文字の後側に付加）追加文字+元ファイルの文字の値で元ファイル名の一部をreplace
+                            FSO.GetFile(filePath).Name = Replace(file, addPos_Char, addPos_Char & "_" & addtext)
+                            cnt = cnt + 1
+                        End If
                     End If
                 Else
                     'OKの場合は入力しなおし、×やcancelした場合は処理抜け
                     If is_Ok Then
                         MsgBox "入力項目不足です", vbExclamation
+                        Call DisplayUserForm(FSO, folderPath, addtext)
                     Else
                         Exit Sub
                     End If
@@ -106,7 +141,3 @@ Sub DoFiles(folderPath As String, addtext As String)
     Loop
         
 End Sub
-
-
-
-

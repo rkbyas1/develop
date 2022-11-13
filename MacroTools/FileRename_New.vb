@@ -6,7 +6,7 @@ Public addPos_Char As String
 Public is_Ok As Boolean
 
 'その他変数
-Dim addtext As String, filePath As String
+Dim addtext As String, filePath As String, OrgFolderPath As String
 Dim FSO As Scripting.FileSystemObject
 Dim cnt As Long
 
@@ -21,31 +21,39 @@ Sub ExecuteFileRename()
     Set FSO = CreateObject("Scripting.FileSystemObject")
      
     '対象ファイルがあるフォルダを取得し、配下のファイルを取得
-'    On Error GoTo out
+    On Error GoTo Catch
+    
+Again:
     With Application.FileDialog(msoFileDialogFolderPicker)
         .Show
         folderPath = .SelectedItems(1)
     End With
     
+    OrgFolderPath = folderPath
+    
     'folderPath配下にsubfolderもファイルもなければ対象ファイルなしとメッセージを出す
-    fileName = Dir(folderPath & "\*.*")
-    folderCnt = FSO.GetFolder(folderPath).subFolders.Count
+    fileName = Dir(OrgFolderPath & "\*.*")
+    folderCnt = FSO.GetFolder(OrgFolderPath).subFolders.Count
     
     If folderCnt < 1 And fileName = "" Then
         MsgBox "サブフォルダまたはファイルがありません", vbExclamation
+        GoTo Again
     Else
         'ダイアログで入力促す
-        addtext = InputBox("ファイル名に追加する文字列を入力してください")
-        
+        addtext = InputBox("ファイル名に反映する文字列を入力してください" & vbCrLf & "※削除の場合は適当な値を入力する")
         If addtext <> "" Then
-            Call DisplayUserForm(FSO, folderPath, addtext)
+            Call DisplayUserForm(FSO, OrgFolderPath, addtext)
         Else
-            MsgBox "値が入力されませんでした", vbInformation
             Exit Sub
         End If
     End If
       
-'out:
+    'エラーハンドリング
+Catch:
+    'ファイル選択でキャンセルを押した場合
+    If Err.Number = "5" Then
+        Exit Sub
+    End If
 
 End Sub
 
@@ -128,7 +136,7 @@ Sub DoFiles(folderPath As String, addtext As String)
                     'OKの場合は入力しなおし、×やcancelした場合は処理抜け
                     If is_Ok Then
                         MsgBox "入力項目不足です", vbExclamation
-                        Call DisplayUserForm(FSO, folderPath, addtext)
+                        Call DisplayUserForm(FSO, OrgFolderPath, addtext)
                     Else
                         Exit Sub
                     End If
